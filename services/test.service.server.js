@@ -4,11 +4,16 @@ import { readFile, writeFile } from 'fs/promises';
 
 const API_URL = 'https://master-white-box-cartoonization-psi1104.endpoint.ainize.ai/predict';
 
+const processImage = async (file) => {
+    console.log(file);
+    const img = await readFile(file.path);
+    return cartoonifyImage(img);
+}
+
 const cartoonifyImage = async (img) => {
     const formData = new FormData();
     formData.append('file_type', 'image');
-    formData.append('source', img, 'Ginger Seal.jpg');
-    //console.log(formData);
+    formData.append('source', img, 'input image.jpg');
     return fetch(API_URL, {
         method: 'POST',
         body: formData,
@@ -26,4 +31,4 @@ const sealWrite = async () => {
     writeFile('./wow.jpg', Buffer.from(data));
 };
 
-export { cartoonifyImage, sealTest, sealWrite };
+export { cartoonifyImage, sealTest, sealWrite, processImage };
