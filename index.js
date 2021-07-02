@@ -13,7 +13,7 @@ app.use(function (req, res, next) {
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
 
-import testController from './controllers/test.controller.server.js';
+import testController from './controllers/image.controller.server.js';
 testController(app);
 
 app.listen(port, () => console.log('Listening on port ' + port));
