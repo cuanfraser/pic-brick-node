@@ -5,7 +5,7 @@
     "main": "src/index.js",
     "type": "module",
     "scripts": {
-        "test": "jest",
+        "test": "NODE_OPTIONS=--experimental-vm-modules jest --verbose",
         "start": "node src/index.js"
     },
     "author": "cuanfraser",
@@ -19,6 +19,7 @@
         "sharp": "^0.28.3"
     },
     "devDependencies": {
+        "@types/jest": "^26.0.23",
         "jest": "^27.0.6"
     }
 }

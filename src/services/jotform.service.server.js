@@ -7,7 +7,12 @@ const getSourceImage = async (formId, subId, fileName) => {
     const url = imageUrl + apiParam;
     console.log(url);
     const resp = await fetch(url);
-    return resp.buffer();
+    if (resp.ok) {
+        return resp.buffer();
+    } else {
+        throw new Error('Failed retrieving image from JotForm');
+    }
+    
 };
 
 export { getSourceImage };
