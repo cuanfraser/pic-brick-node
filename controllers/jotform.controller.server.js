@@ -5,8 +5,6 @@ import { getSourceImage } from '../services/jotform.service.server.js';
 export default (app) => {
     app.post('/api/jotform', async (req, res) => {
         try {
-            console.log({ req });
-
             const formId = req.body.formID;
             const subId = req.body.submission_id;
             const files = [].concat(req.body['fileupload[]']);
