@@ -13,7 +13,7 @@ export default (app) => {
             for (const fileName of files) {
                 console.log(fileName);
                 const image = await getSourceImage(formId, subId, fileName);
-                res.contentType('application/octet-stream');
+                res.contentType('image/jpeg');
                 res.send(image);
                 break;
                 // const newImg = await cartoonifyImage(image);
