@@ -13,4 +13,4 @@ const cartoonifyImage = async (img) => {
     });
 };
 
-export { cartoonifyImage, processImage };
+export { cartoonifyImage };
