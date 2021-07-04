@@ -5,12 +5,12 @@ import { getSourceImage } from '../services/jotform.service.server.js';
 export default (app) => {
     app.post('/api/jotform', async (req, res) => {
         try {
-            console.log('test');
-            console.log(req);
+            console.log({ req });
 
             const formId = req.body.formID;
             const subId = req.body.submission_id;
-            for (const fileName of req.body['fileupload[]']) {
+            const files = [].concat(req.body['fileupload[]']);
+            for (const fileName of files) {
                 console.log(fileName);
                 const image = await getSourceImage(formId, subId, fileName);
                 res.contentType('application/octet-stream');
@@ -22,12 +22,6 @@ export default (app) => {
                 // res.send(Buffer.from(data));
             }
 
-            //res.status(500).send('Test!');
-
-            // const img = await processImage(files.source);
-            // res.contentType('image/jpeg');
-            // const data = await img.arrayBuffer();
-            // res.send(Buffer.from(data));
         } catch (error) {
             console.error(error);
             console.error(error.stack);
