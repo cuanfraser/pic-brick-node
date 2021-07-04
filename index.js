@@ -13,7 +13,9 @@ app.use(function (req, res, next) {
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
 
-import testController from './controllers/image.controller.server.js';
-testController(app);
+import imageController from './controllers/image.controller.server.js';
+imageController(app);
+import jotformController from './controllers/jotform.controller.server.js';
+jotformController(app);
 
 app.listen(port, () => console.log('Listening on port ' + port));
