@@ -15,6 +15,7 @@ export default (app) => {
                 // res.contentType('image/jpeg');
                 // const data = await img.arrayBuffer();
                 // res.send(Buffer.from(data));
+                res.status(500).send('Test!')
             });
         } catch (error) {
             console.error(error);
