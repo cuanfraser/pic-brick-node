@@ -6,7 +6,8 @@ const getSourceImage = async (formId, subId, fileName) => {
     const apiParam = `?apiKey=${JOTFORM_API_KEY}`;
     const url = imageUrl + apiParam;
     console.log(url);
-    return fetch(url);
+    const resp = await fetch(url);
+    return resp.buffer();
 };
 
 export { getSourceImage };

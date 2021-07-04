@@ -25,10 +25,4 @@ const sealTest = () =>
         .then((img) => cartoonifyImage(img))
         .catch((err) => console.log(`Error: ${err}`));
 
-const sealWrite = async () => {
-    const response = await sealTest();
-    const data = await response.arrayBuffer();
-    writeFile('./wow.jpg', Buffer.from(data));
-};
-
-export { cartoonifyImage, sealTest, sealWrite, processImage };
+export { cartoonifyImage, sealTest, processImage };
