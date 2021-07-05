@@ -1,6 +1,6 @@
 import { cartoonifyImage } from '../services/image.service.server.js';
 import { get } from 'lodash-es';
-import { getSourceImage } from '../services/jotform.service.server.js';
+import { getSourceImage, cartoonifySourceImage } from '../services/jotform.service.server.js';
 
 export default (app) => {
     app.post('/api/jotform', async (req, res) => {
@@ -10,7 +10,7 @@ export default (app) => {
             const files = [].concat(req.body['fileupload[]']);
             for (const fileName of files) {
                 console.log(fileName);
-                const image = await getSourceImage(formId, subId, fileName);
+                const image = await cartoonifySourceImage(formId, subId, fileName);
                 res.contentType('image/jpeg');
                 res.send(image);
                 break;

@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
 import FormData from 'form-data';
-import { CARTOON_API_URL } from '../constants';
+import { CARTOON_API_URL } from '../constants.js';
 
 const cartoonifyImage = async (img) => {
     const formData = new FormData();
