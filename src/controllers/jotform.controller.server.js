@@ -1,6 +1,6 @@
 import { cartoonifyImage } from '../services/image.service.server.js';
 import { get } from 'lodash-es';
-import { getSourceImage, cartoonifySourceImage } from '../services/jotform.service.server.js';
+import { pixelateJotFormImage } from '../services/jotform.service.server.js';
 
 export default (app) => {
     app.post('/api/jotform', async (req, res) => {
@@ -9,8 +9,7 @@ export default (app) => {
             const subId = req.body.submission_id;
             const files = [].concat(req.body['fileupload[]']);
             for (const fileName of files) {
-                console.log(fileName);
-                const image = await cartoonifySourceImage(formId, subId, fileName);
+                const image = await pixelateJotFormImage(formId, subId, fileName);
                 res.contentType('image/jpeg');
                 res.send(image);
                 break;
@@ -19,7 +18,6 @@ export default (app) => {
                 // const data = await newImg.arrayBuffer();
                 // res.send(Buffer.from(data));
             }
-
         } catch (error) {
             console.error(error);
             console.error(error.stack);
