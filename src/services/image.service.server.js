@@ -38,14 +38,12 @@ const pixelateImage = async (src, boardSize) => {
     console.log(boardSize);
     let sampleSize = 1;
     if (boardSize === 'Small 64x64') {
-        sampleSize = 10;
+        sampleSize = 20;
     } else if (boardSize === 'Medium 96x64') {
-        sampleSize = 10;
+        sampleSize = 15;
     } else if (boardSize === 'Large 96x96') {
         sampleSize = 10;
     }
-
-    sampleSize = 1;
 
     for (let y = 0; y < h; y += sampleSize) {
         for (let x = 0; x < w; x += sampleSize) {
