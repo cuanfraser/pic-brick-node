@@ -12,9 +12,11 @@
     "license": "ISC",
     "dependencies": {
         "canvas": "^2.8.0",
+        "color-convert": "^1.9.3",
         "express": "^4.17.1",
         "form-data": "^4.0.0",
         "lodash-es": "^4.17.21",
+        "nearest-color": "^0.4.4",
         "node-fetch": "^2.6.1",
         "sharp": "^0.28.3"
     },

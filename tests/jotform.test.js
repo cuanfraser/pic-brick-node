@@ -1,5 +1,9 @@
 import fetch from 'node-fetch';
-import { getSourceImage } from '../src/services/jotform.service.server.js';
+import {
+    getJotFormImage,
+    cartoonifyJotFormImage,
+    pixelateJotFormImage,
+} from '../src/services/jotform.service.server.js';
 
 describe('JotForm', () => {
     test('JotForm Sample Image URL Active', async () => {
@@ -12,12 +16,21 @@ describe('JotForm', () => {
 
     // NOT CHECKING IF IMAGE -- IGNORE BASICALLY
     test('JotForm Retrieve Image w/ Service', async () => {
-
         const formId = 211827483647060;
         const subId = 5012321919365964060;
-        const fileName = "Logan_Rock_Treen_closeup.jpg";
+        const fileName = 'Logan_Rock_Treen_closeup.jpg';
 
-        expect( async () => await getSourceImage(formId, subId, fileName)).not.toThrow(Error);
+        expect(async () => await getJotFormImage(formId, subId, fileName)).not.toThrow(Error);
+    });
 
+    // NOT CHECKING IF IMAGE -- IGNORE BASICALLY
+    test('JotForm Retrieve Image w/ Service', async () => {
+        const formId = 211827483647060;
+        const subId = 5012321919365964060;
+        const fileName = 'Logan_Rock_Treen_closeup.jpg';
+
+        expect(async () => await cartoonifyJotFormImage(formId, subId, fileName)).not.toThrow(
+            Error
+        );
     });
 });
