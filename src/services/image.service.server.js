@@ -1,7 +1,9 @@
 import fetch from 'node-fetch';
 import FormData from 'form-data';
-import { CARTOON_API_URL } from '../constants.js';
+import { CARTOON_API_URL, HEX_COLOUR_PALETTE } from '../constants.js';
 import Canvas from 'canvas';
+import convert from 'color-convert';
+import nearestColour from 'nearest-color';
 
 const cartoonifyImage = async (img) => {
     console.time('cartoon');
@@ -17,7 +19,7 @@ const cartoonifyImage = async (img) => {
     return resp;
 };
 
-const pixelateImage = async (src) => {
+const pixelateImage = async (src, boardSize) => {
     console.time('pixelate');
     // const img = new Canvas.Image();
     // img.src = src;
@@ -31,22 +33,30 @@ const pixelateImage = async (src) => {
     ctx.drawImage(img, 0, 0);
 
     let pixelArr = ctx.getImageData(0, 0, w, h).data;
-    let sample_size = 10;
 
-    for (let y = 0; y < h; y += sample_size) {
-        for (let x = 0; x < w; x += sample_size) {
+    // Calculate Sample Size based on Physical Size
+    console.log(boardSize);
+    let sampleSize = 1;
+    if (boardSize === 'Small 64x64') {
+        sampleSize = 10;
+    } else if (boardSize === 'Medium 96x64') {
+        sampleSize = 10;
+    } else if (boardSize === 'Large 96x96') {
+        sampleSize = 10;
+    }
+
+    sampleSize = 1;
+
+    for (let y = 0; y < h; y += sampleSize) {
+        for (let x = 0; x < w; x += sampleSize) {
             let p = (x + y * w) * 4;
-            ctx.fillStyle =
-                'rgba(' +
-                pixelArr[p] +
-                ',' +
-                pixelArr[p + 1] +
-                ',' +
-                pixelArr[p + 2] +
-                ',' +
-                pixelArr[p + 3] +
-                ')';
-            ctx.fillRect(x, y, sample_size, sample_size);
+            // TODO: Change to average RGB Vals
+            // Currently first pixel RGB vals in sample is used
+
+            const match = closestColourInPalette(pixelArr[p], pixelArr[p + 1], pixelArr[p + 2]);
+
+            ctx.fillStyle = 'rgba(' + match[0] + ',' + match[1] + ',' + match[2] + ',' + 1 + ')';
+            ctx.fillRect(x, y, sampleSize, sampleSize);
         }
     }
 
@@ -55,4 +65,11 @@ const pixelateImage = async (src) => {
     return can.toBuffer('image/jpeg', { quality: 0.75 });
 };
 
-export { cartoonifyImage, pixelateImage };
+const closestColourInPalette = (r, g, b) => {
+    const matcher = nearestColour.from(HEX_COLOUR_PALETTE);
+    const hexMatch = matcher(`rgb(${r}, ${g}, ${b})`);
+    const rgbOutput = convert.hex.rgb(hexMatch);
+    return rgbOutput;
+};
+
+export { cartoonifyImage, pixelateImage, closestColourInPalette };

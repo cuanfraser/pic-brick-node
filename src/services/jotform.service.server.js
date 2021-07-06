@@ -28,9 +28,9 @@ const cartoonifyJotFormImage = async (formId, subId, fileName) => {
     }
 };
 
-const pixelateJotFormImage = async (formId, subId, fileName) => {
+const pixelateJotFormImage = async (formId, subId, fileName, size) => {
     const cartoon = await cartoonifyJotFormImage(formId, subId, fileName);
-    return pixelateImage(cartoon);
+    return pixelateImage(cartoon, size);
 };
 
 export { getJotFormImage, cartoonifyJotFormImage, pixelateJotFormImage };

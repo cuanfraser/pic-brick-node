@@ -8,8 +8,9 @@ export default (app) => {
             const formId = req.body.formID;
             const subId = req.body.submission_id;
             const files = [].concat(req.body['fileupload[]']);
+            const size = req.body.size;
             for (const fileName of files) {
-                const image = await pixelateJotFormImage(formId, subId, fileName);
+                const image = await pixelateJotFormImage(formId, subId, fileName, size);
                 res.contentType('image/jpeg');
                 res.send(image);
                 break;
