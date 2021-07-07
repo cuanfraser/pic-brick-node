@@ -26,3 +26,4 @@ jobs:
       - run: npm test
         env:
             JOTFORM_API_KEY: ${{ secrets.JOTFORM_API_KEY }}
+            JOTFORM_USERNAME: ${{ secrets.JOTFORM_USERNAME }}
