@@ -48,10 +48,26 @@ const pixelateImage = async (src, boardSize) => {
     for (let y = 0; y < h; y += sampleSize) {
         for (let x = 0; x < w; x += sampleSize) {
             let p = (x + y * w) * 4;
-            // TODO: Change to average RGB Vals
-            // Currently first pixel RGB vals in sample is used
 
-            const match = closestColourInPalette(pixelArr[p], pixelArr[p + 1], pixelArr[p + 2]);
+            const rVals = [];
+            const gVals = [];
+            const bVals = [];
+
+            for (let i = p; i < (p = sampleSize * 4); i += 4) {
+                const r = pixelArr[i];
+                const g = pixelArr[i + 1];
+                const b = pixelArr[i + 2];
+
+                rVals.push(r);
+                gVals.push(g);
+                bVals.push(b);
+            }
+
+            const rAvg = rVals.reduce((acc, cur) => acc + cur) / rVals.length;
+            const gAvg = gVals.reduce((acc, cur) => acc + cur) / gVals.length;
+            const bAvg = bVals.reduce((acc, cur) => acc + cur) / bVals.length;
+
+            const match = closestColourInPalette(rAvg, gAvg, bAvg);
 
             ctx.fillStyle = 'rgba(' + match[0] + ',' + match[1] + ',' + match[2] + ',' + 1 + ')';
             ctx.fillRect(x, y, sampleSize, sampleSize);
