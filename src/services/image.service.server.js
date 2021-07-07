@@ -49,11 +49,12 @@ const pixelateImage = async (src, boardSize) => {
         for (let x = 0; x < w; x += sampleSize) {
             let p = (x + y * w) * 4;
 
+            // Average RGB vals over sample size
+            //   Collect RGB values over sample size
             const rVals = [];
             const gVals = [];
             const bVals = [];
-
-            for (let i = p; i < (p = sampleSize * 4); i += 4) {
+            for (let i = p; i < p + sampleSize * 4; i += 4) {
                 const r = pixelArr[i];
                 const g = pixelArr[i + 1];
                 const b = pixelArr[i + 2];
@@ -62,11 +63,12 @@ const pixelateImage = async (src, boardSize) => {
                 gVals.push(g);
                 bVals.push(b);
             }
+            //   Average RGB vals
+            const rAvg = Math.floor(rVals.reduce((acc, cur) => acc + cur) / rVals.length);
+            const gAvg = Math.floor(gVals.reduce((acc, cur) => acc + cur) / gVals.length);
+            const bAvg = Math.floor(bVals.reduce((acc, cur) => acc + cur) / bVals.length);
 
-            const rAvg = rVals.reduce((acc, cur) => acc + cur) / rVals.length;
-            const gAvg = gVals.reduce((acc, cur) => acc + cur) / gVals.length;
-            const bAvg = bVals.reduce((acc, cur) => acc + cur) / bVals.length;
-
+            // Find closest RGB colour in palette
             const match = closestColourInPalette(rAvg, gAvg, bAvg);
 
             ctx.fillStyle = 'rgba(' + match[0] + ',' + match[1] + ',' + match[2] + ',' + 1 + ')';
