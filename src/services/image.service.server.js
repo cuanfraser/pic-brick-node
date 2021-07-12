@@ -25,8 +25,13 @@ const pixelateImage = async (src, boardSize) => {
     // img.src = src;
     const img = await Canvas.loadImage(src);
 
+    console.group(['Pixelate Image']);
+
     const w = img.width;
     const h = img.height;
+
+    console.log('Pixelate: h = ' + h);
+    console.log('Pixelate: w = ' + w);
 
     const can = Canvas.createCanvas(w, h);
     let ctx = can.getContext('2d');
@@ -95,12 +100,15 @@ const pixelateImage = async (src, boardSize) => {
             // Find closest RGB colour in palette
             const match = closestColourInPalette(rAvg, gAvg, bAvg);
 
-            outputCtx.fillStyle = 'rgba(' + match[0] + ',' + match[1] + ',' + match[2] + ',' + 1 + ')';
+            outputCtx.fillStyle =
+                'rgba(' + match[0] + ',' + match[1] + ',' + match[2] + ',' + 1 + ')';
             outputCtx.fillRect(x, y, roundedSampleSize, roundedSampleSize);
         }
     }
 
     console.timeEnd('pixelate');
+
+    console.groupEnd();
 
     return outputCan.toBuffer('image/jpeg', { quality: 0.75 });
 };
