@@ -36,14 +36,18 @@ const pixelateImage = async (src, boardSize) => {
 
     // Calculate Sample Size based on Physical Size
     console.log(boardSize);
-    let sampleSize = 1;
+    let sampleSize = w / 64;
+    // Sample Size = (Res / Blocks #)
     if (boardSize === 'Small 64x64') {
-        sampleSize = 20;
+        sampleSize = w / 64;
     } else if (boardSize === 'Medium 96x64') {
-        sampleSize = 15;
+        sampleSize = w / 64;
     } else if (boardSize === 'Large 96x96') {
-        sampleSize = 10;
+        sampleSize = w / 96;
     }
+
+    console.log(sampleSize);
+    console.log(w);
 
     for (let y = 0; y < h; y += sampleSize) {
         for (let x = 0; x < w; x += sampleSize) {
