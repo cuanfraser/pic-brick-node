@@ -4,6 +4,7 @@ import { pixelateJotFormImage } from '../services/jotform.service.server.js';
 
 export default (app) => {
     app.post('/api/jotform', async (req, res) => {
+        console.groupCollapsed(['/api/jotform request']);
         try {
             const formId = req.body.formID;
             const subId = req.body.submission_id;
@@ -14,15 +15,12 @@ export default (app) => {
                 res.contentType('image/jpeg');
                 res.send(image);
                 break;
-                // const newImg = await cartoonifyImage(image);
-                // res.contentType('image/jpeg');
-                // const data = await newImg.arrayBuffer();
-                // res.send(Buffer.from(data));
             }
         } catch (error) {
             console.error(error);
             console.error(error.stack);
             res.status(500).send('Error!');
         }
+        console.groupEnd();
     });
 };
