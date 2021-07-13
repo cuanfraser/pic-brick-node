@@ -57,6 +57,39 @@ const pixelateImage = async (src, boardSize) => {
             cropH = originalHeight - originalWidth;
         }
     }
+
+    if (ratio === 1.5) {
+        const horizontalRatio = originalWidth / originalHeight;
+        const verticalRatio = originalHeight / originalWidth;
+        // landscape
+        if (originalWidth > originalHeight) {
+            if (horizontalRatio > 1.5) {
+                const neededWidth = originalHeight * 1.5;
+                cropW = originalWidth - neededWidth;
+            } else {
+                const neededHeight = originalWidth / 1.5;
+                cropH = originalHeight - neededHeight;
+            }
+        }
+
+        // vertical
+        else if (originalHeight > originalWidth) {
+            const temp = widthBlocks;
+            widthBlocks = heightBlocks;
+            heightBlocks = temp;
+            if (verticalRatio > 1.5) {
+                const neededHeight = originalWidth * 1.5;
+                cropH = originalHeight - neededHeight;
+            } else {
+                const neededWidth = originalHeight / 1.5;
+                cropW = originalWidth - neededWidth;
+            }
+        }
+    }
+
+    cropW = Math.floor(cropW);
+    cropH = Math.floor(cropH);
+
     const croppedWidth = originalWidth - cropW;
     const croppedHeight = originalHeight - cropH;
     console.log(`croppedWidth: ${croppedWidth} croppedHeight: ${croppedHeight}`);
@@ -66,12 +99,13 @@ const pixelateImage = async (src, boardSize) => {
     const modCropH = croppedHeight % heightBlocks;
     console.log(`modCropW: ${modCropW} modCropH: ${modCropH}`);
 
-    const newHeight = croppedWidth - modCropH;
-    const newWidth = croppedHeight - modCropW;
+    const newHeight = croppedHeight - modCropH;
+    const newWidth = croppedWidth - modCropW;
     console.log(`newHeight: ${newHeight} newWidth: ${newWidth}`);
 
     const finalCropW = modCropW + cropW;
     const finalCropH = modCropH + cropH;
+    console.log(`finalCropW: ${finalCropW} finalCropH: ${finalCropH}`);
 
     const can = Canvas.createCanvas(newWidth, newHeight);
     let ctx = can.getContext('2d');
@@ -90,8 +124,7 @@ const pixelateImage = async (src, boardSize) => {
 
     let pixelArr = ctx.getImageData(0, 0, newWidth, newHeight).data;
 
-    const sampleSize = newWidth / widthBlocks;
-
+    let sampleSize = newWidth / widthBlocks;
 
     console.log('Sample Size: ' + sampleSize);
     console.log('Image Width: ' + newWidth);
