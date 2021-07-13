@@ -14,23 +14,21 @@ describe('JotForm', () => {
         expect(resp.ok).toBe(true);
     });
 
-    // NOT CHECKING IF IMAGE -- IGNORE BASICALLY
     test('JotForm Retrieve Image w/ Service', async () => {
-        const formId = 211827483647060;
-        const subId = 5012321919365964060;
+        const formId = '211827483647060';
+        const subId = '5012321919365964060';
         const fileName = 'Logan_Rock_Treen_closeup.jpg';
 
-        expect(async () => await getJotFormImage(formId, subId, fileName)).not.toThrow(Error);
+        const img = await getJotFormImage(formId, subId, fileName);
+        expect(img).toBeDefined();
     });
 
-    // NOT CHECKING IF IMAGE -- IGNORE BASICALLY
-    test('JotForm Retrieve Image w/ Service', async () => {
-        const formId = 211827483647060;
-        const subId = 5012321919365964060;
+    test('Cartoonify JotForm Image Response', async () => {
+        const formId = '211827483647060';
+        const subId = '5012321919365964060';
         const fileName = 'Logan_Rock_Treen_closeup.jpg';
 
-        expect(async () => await cartoonifyJotFormImage(formId, subId, fileName)).not.toThrow(
-            Error
-        );
+        const img = await cartoonifyJotFormImage(formId, subId, fileName);
+        expect(img).toBeDefined();
     });
 });
