@@ -130,6 +130,8 @@ const closestColourInPalette = (r, g, b) => {
 };
 
 const cropImageToBoardSize = (widthBlocks, heightBlocks, originalWidth, originalHeight) => {
+    console.groupCollapsed(['Crop Image']);
+
     // Crop to correct aspect ratio
     const boardRatio = widthBlocks / heightBlocks;
     const horizontalRatio = originalWidth / originalHeight;
@@ -184,6 +186,8 @@ const cropImageToBoardSize = (widthBlocks, heightBlocks, originalWidth, original
     const output = { newWidth, newHeight, widthCrop, heightCrop };
     console.log('Crop Output: ');
     console.dir(output);
+
+    console.groupEnd();
 
     return output;
 };
