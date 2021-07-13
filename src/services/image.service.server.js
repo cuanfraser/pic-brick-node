@@ -20,70 +20,95 @@ const cartoonifyImage = async (img) => {
 };
 
 const pixelateImage = async (src, boardSize) => {
-    console.time('pixelate');
-    // const img = new Canvas.Image();
-    // img.src = src;
-    const img = await Canvas.loadImage(src);
-
     console.group(['Pixelate Image']);
+    console.time('pixelate');
 
-    const w = img.width;
-    const h = img.height;
+    const img = await Canvas.loadImage(src);
+    const originalWidth = img.width;
+    const originalHeight = img.height;
 
-    console.log('Pixelate: h = ' + h);
-    console.log('Pixelate: w = ' + w);
-
-    const can = Canvas.createCanvas(w, h);
-    let ctx = can.getContext('2d');
-    ctx.drawImage(img, 0, 0);
-
-    let pixelArr = ctx.getImageData(0, 0, w, h).data;
+    console.log(`originalWidth: ${originalWidth} originalHeight: ${originalHeight}`);
 
     // Calculate Sample Size based on Physical Size
     console.log(boardSize);
-    let sampleSize = w / 64;
     let widthBlocks = 64;
     let heightBlocks = 64;
     // Sample Size = (Res / Blocks #)
     if (boardSize === 'Small 64x64') {
-        sampleSize = w / 64;
         widthBlocks = 64;
         heightBlocks = 64;
     } else if (boardSize === 'Medium 96x64') {
-        sampleSize = w / 64;
         widthBlocks = 96;
         heightBlocks = 64;
     } else if (boardSize === 'Large 96x96') {
-        sampleSize = w / 96;
         widthBlocks = 96;
         heightBlocks = 96;
     }
 
-    const roundedSampleSize = Math.floor(sampleSize);
+    // Crop to correct aspect ratio
+    const ratio = widthBlocks / heightBlocks;
 
-    // Reduce Size to 64: Res*(1/(Math.floor(sampleSize)) - 1/(Res/widthBlocks))
-    const reduceBlocks = w * (1 / roundedSampleSize - 1 / (w / widthBlocks));
-    const pixelsDump = reduceBlocks * roundedSampleSize;
+    let cropW = 0;
+    let cropH = 0;
+    if (ratio === 1) {
+        if (originalWidth > originalHeight) {
+            cropW = originalWidth - originalHeight;
+        } else if (originalHeight > originalWidth) {
+            cropH = originalHeight - originalWidth;
+        }
+    }
+    const croppedWidth = originalWidth - cropW;
+    const croppedHeight = originalHeight - cropH;
+    console.log(`croppedWidth: ${croppedWidth} croppedHeight: ${croppedHeight}`);
+    console.log(`cropW: ${cropW} cropH: ${cropH}`);
+
+    const modCropW = croppedWidth % widthBlocks;
+    const modCropH = croppedHeight % heightBlocks;
+    console.log(`modCropW: ${modCropW} modCropH: ${modCropH}`);
+
+    const newHeight = croppedWidth - modCropH;
+    const newWidth = croppedHeight - modCropW;
+    console.log(`newHeight: ${newHeight} newWidth: ${newWidth}`);
+
+    const finalCropW = modCropW + cropW;
+    const finalCropH = modCropH + cropH;
+
+    const can = Canvas.createCanvas(newWidth, newHeight);
+    let ctx = can.getContext('2d');
+    //ctx.drawImage(img, 0, 0);
+    ctx.drawImage(
+        img,
+        finalCropW / 2,
+        finalCropH / 2,
+        newWidth,
+        newHeight,
+        0,
+        0,
+        newWidth,
+        newHeight
+    );
+
+    let pixelArr = ctx.getImageData(0, 0, newWidth, newHeight).data;
+
+    const sampleSize = newWidth / widthBlocks;
+
 
     console.log('Sample Size: ' + sampleSize);
-    console.log('Rounded Sample Size: ' + roundedSampleSize);
-    console.log('Image Width: ' + w);
-    console.log('To Reduce Blocks: ' + reduceBlocks);
-    console.log('Pixels Dump: ' + pixelsDump);
+    console.log('Image Width: ' + newWidth);
 
-    const outputCan = Canvas.createCanvas(w - Math.ceil(pixelsDump), h - Math.ceil(pixelsDump));
+    const outputCan = Canvas.createCanvas(newWidth, newHeight);
     let outputCtx = outputCan.getContext('2d');
 
-    for (let y = 0; y < h - pixelsDump; y += roundedSampleSize) {
-        for (let x = 0; x < w - pixelsDump; x += roundedSampleSize) {
-            let p = (x + y * w) * 4;
+    for (let y = 0; y < newHeight; y += sampleSize) {
+        for (let x = 0; x < newWidth; x += sampleSize) {
+            let p = (x + y * newWidth) * 4;
 
             // Average RGB vals over sample size
             //   Collect RGB values over sample size
             const rVals = [];
             const gVals = [];
             const bVals = [];
-            for (let i = p; i < p + roundedSampleSize * 4; i += 4) {
+            for (let i = p; i < p + sampleSize * 4; i += 4) {
                 const r = pixelArr[i];
                 const g = pixelArr[i + 1];
                 const b = pixelArr[i + 2];
@@ -102,15 +127,16 @@ const pixelateImage = async (src, boardSize) => {
 
             outputCtx.fillStyle =
                 'rgba(' + match[0] + ',' + match[1] + ',' + match[2] + ',' + 1 + ')';
-            outputCtx.fillRect(x, y, roundedSampleSize, roundedSampleSize);
+            outputCtx.fillRect(x, y, sampleSize, sampleSize);
         }
     }
 
-    console.timeEnd('pixelate');
+    const output = outputCan.toBuffer('image/jpeg', { quality: 0.75 });
 
+    console.timeEnd('pixelate');
     console.groupEnd();
 
-    return outputCan.toBuffer('image/jpeg', { quality: 0.75 });
+    return output;
 };
 
 const closestColourInPalette = (r, g, b) => {
