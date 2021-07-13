@@ -5,7 +5,7 @@
     "main": "src/index.js",
     "type": "module",
     "scripts": {
-        "test": "NODE_OPTIONS=--experimental-vm-modules jest --verbose",
+        "test": "NODE_OPTIONS=--experimental-vm-modules jest --silent",
         "start": "node src/index.js"
     },
     "author": "cuanfraser",

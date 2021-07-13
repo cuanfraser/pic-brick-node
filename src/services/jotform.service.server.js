@@ -13,7 +13,7 @@ const getJotFormImage = async (formId, subId, fileName) => {
         console.timeEnd('jotImage');
         return resp.buffer();
     } else {
-        throw new Error('Failed retrieving image from JotForm');
+        throw new Error(`Failed retrieving image (${fileName}) from JotForm`);
     }
 };
 

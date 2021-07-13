@@ -1,6 +1,7 @@
 import fetch from 'node-fetch';
 import FormData from 'form-data';
 import { CARTOON_API_URL, HEX_COLOUR_PALETTE } from '../constants.js';
+import { brickImgs } from './file.service.server.js';
 import Canvas from 'canvas';
 import convert from 'color-convert';
 import nearestColour from 'nearest-color';
@@ -45,75 +46,19 @@ const pixelateImage = async (src, boardSize) => {
         heightBlocks = 96;
     }
 
-    // Crop to correct aspect ratio
-    const ratio = widthBlocks / heightBlocks;
-
-    let cropW = 0;
-    let cropH = 0;
-    if (ratio === 1) {
-        if (originalWidth > originalHeight) {
-            cropW = originalWidth - originalHeight;
-        } else if (originalHeight > originalWidth) {
-            cropH = originalHeight - originalWidth;
-        }
-    }
-
-    if (ratio === 1.5) {
-        const horizontalRatio = originalWidth / originalHeight;
-        const verticalRatio = originalHeight / originalWidth;
-        // landscape
-        if (originalWidth > originalHeight) {
-            if (horizontalRatio > 1.5) {
-                const neededWidth = originalHeight * 1.5;
-                cropW = originalWidth - neededWidth;
-            } else {
-                const neededHeight = originalWidth / 1.5;
-                cropH = originalHeight - neededHeight;
-            }
-        }
-
-        // vertical
-        else if (originalHeight > originalWidth) {
-            const temp = widthBlocks;
-            widthBlocks = heightBlocks;
-            heightBlocks = temp;
-            if (verticalRatio > 1.5) {
-                const neededHeight = originalWidth * 1.5;
-                cropH = originalHeight - neededHeight;
-            } else {
-                const neededWidth = originalHeight / 1.5;
-                cropW = originalWidth - neededWidth;
-            }
-        }
-    }
-
-    cropW = Math.floor(cropW);
-    cropH = Math.floor(cropH);
-
-    const croppedWidth = originalWidth - cropW;
-    const croppedHeight = originalHeight - cropH;
-    console.log(`croppedWidth: ${croppedWidth} croppedHeight: ${croppedHeight}`);
-    console.log(`cropW: ${cropW} cropH: ${cropH}`);
-
-    const modCropW = croppedWidth % widthBlocks;
-    const modCropH = croppedHeight % heightBlocks;
-    console.log(`modCropW: ${modCropW} modCropH: ${modCropH}`);
-
-    const newHeight = croppedHeight - modCropH;
-    const newWidth = croppedWidth - modCropW;
-    console.log(`newHeight: ${newHeight} newWidth: ${newWidth}`);
-
-    const finalCropW = modCropW + cropW;
-    const finalCropH = modCropH + cropH;
-    console.log(`finalCropW: ${finalCropW} finalCropH: ${finalCropH}`);
+    const { newWidth, newHeight, widthCrop, heightCrop } = cropImageToBoardSize(
+        widthBlocks,
+        heightBlocks,
+        originalWidth,
+        originalHeight
+    );
 
     const can = Canvas.createCanvas(newWidth, newHeight);
     let ctx = can.getContext('2d');
-    //ctx.drawImage(img, 0, 0);
     ctx.drawImage(
         img,
-        finalCropW / 2,
-        finalCropH / 2,
+        widthCrop / 2,
+        heightCrop / 2,
         newWidth,
         newHeight,
         0,
@@ -122,15 +67,18 @@ const pixelateImage = async (src, boardSize) => {
         newHeight
     );
 
+    // Get pixel array
     let pixelArr = ctx.getImageData(0, 0, newWidth, newHeight).data;
 
     let sampleSize = newWidth / widthBlocks;
-
     console.log('Sample Size: ' + sampleSize);
-    console.log('Image Width: ' + newWidth);
 
-    const outputCan = Canvas.createCanvas(newWidth, newHeight);
-    let outputCtx = outputCan.getContext('2d');
+    //Brick image
+    const brickImageWidth = (newWidth / sampleSize) * 32;
+    const brickImageHeight = (newHeight / sampleSize) * 32;
+    console.log(`brickImageWidth: ${brickImageWidth} brickImageHeight: ${brickImageHeight}`);
+    const brickImageCan = Canvas.createCanvas(brickImageWidth, brickImageHeight);
+    let brickImageCtx = brickImageCan.getContext('2d');
 
     for (let y = 0; y < newHeight; y += sampleSize) {
         for (let x = 0; x < newWidth; x += sampleSize) {
@@ -158,13 +106,15 @@ const pixelateImage = async (src, boardSize) => {
             // Find closest RGB colour in palette
             const match = closestColourInPalette(rAvg, gAvg, bAvg);
 
-            outputCtx.fillStyle =
-                'rgba(' + match[0] + ',' + match[1] + ',' + match[2] + ',' + 1 + ')';
-            outputCtx.fillRect(x, y, sampleSize, sampleSize);
+            brickImageCtx.drawImage(
+                brickImgs[convert.rgb.hex(match)],
+                (x / sampleSize) * 32,
+                (y / sampleSize) * 32
+            );
         }
     }
 
-    const output = outputCan.toBuffer('image/jpeg', { quality: 0.75 });
+    const output = brickImageCan.toBuffer('image/jpeg', { quality: 0.75 });
 
     console.timeEnd('pixelate');
     console.groupEnd();
@@ -179,4 +129,67 @@ const closestColourInPalette = (r, g, b) => {
     return rgbOutput;
 };
 
-export { cartoonifyImage, pixelateImage, closestColourInPalette };
+const cropImageToBoardSize = (widthBlocks, heightBlocks, originalWidth, originalHeight) => {
+    console.groupCollapsed(['Crop Image']);
+
+    // Crop to correct aspect ratio
+    const boardRatio = widthBlocks / heightBlocks;
+    const horizontalRatio = originalWidth / originalHeight;
+    const verticalRatio = originalHeight / originalWidth;
+
+    console.log(
+        `boardRatio: ${boardRatio} horizontalRatio: ${horizontalRatio} verticalRatio: ${verticalRatio}`
+    );
+
+    let cropW = 0;
+    let cropH = 0;
+    // landscape
+    if (originalWidth >= originalHeight) {
+        if (horizontalRatio > boardRatio) {
+            const neededWidth = originalHeight * boardRatio;
+            cropW = originalWidth - neededWidth;
+        } else {
+            const neededHeight = originalWidth / boardRatio;
+            cropH = originalHeight - neededHeight;
+        }
+    }
+    // vertical
+    else if (originalWidth < originalHeight) {
+        const temp = widthBlocks;
+        widthBlocks = heightBlocks;
+        heightBlocks = temp;
+        if (verticalRatio > boardRatio) {
+            const neededHeight = originalWidth * boardRatio;
+            cropH = originalHeight - neededHeight;
+        } else {
+            const neededWidth = originalHeight / boardRatio;
+            cropW = originalWidth - neededWidth;
+        }
+    }
+
+    cropW = Math.floor(cropW);
+    cropH = Math.floor(cropH);
+
+    const ratioCropWidth = originalWidth - cropW;
+    const ratioCropHeight = originalHeight - cropH;
+    console.log(`ratioCropWidth: ${ratioCropWidth} ratioCropHeight: ${ratioCropHeight}`);
+    console.log(`cropW: ${cropW} cropH: ${cropH}`);
+
+    const modCropW = ratioCropWidth % widthBlocks;
+    const modCropH = ratioCropHeight % heightBlocks;
+    console.log(`modCropW: ${modCropW} modCropH: ${modCropH}`);
+
+    const newWidth = ratioCropWidth - modCropW;
+    const newHeight = ratioCropHeight - modCropH;
+    const widthCrop = modCropW + cropW;
+    const heightCrop = modCropH + cropH;
+    const output = { newWidth, newHeight, widthCrop, heightCrop };
+    console.log('Crop Output: ');
+    console.dir(output);
+
+    console.groupEnd();
+
+    return output;
+};
+
+export { cartoonifyImage, pixelateImage, closestColourInPalette, cropImageToBoardSize };
