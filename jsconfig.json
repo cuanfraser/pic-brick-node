@@ -3,7 +3,7 @@
         "module": "es2015",
         "target": "es6"
     },
-    "exclude": ["node_modules, reference"],
+    "exclude": ["node_modules, reference, resources"],
     "typeAcquisition": {
         "include": ["jest"]
     }

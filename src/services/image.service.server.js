@@ -109,7 +109,6 @@ const pixelateImage = async (src, boardSize) => {
 
     const can = Canvas.createCanvas(newWidth, newHeight);
     let ctx = can.getContext('2d');
-    //ctx.drawImage(img, 0, 0);
     ctx.drawImage(
         img,
         finalCropW / 2,
@@ -129,8 +128,20 @@ const pixelateImage = async (src, boardSize) => {
     console.log('Sample Size: ' + sampleSize);
     console.log('Image Width: ' + newWidth);
 
-    const outputCan = Canvas.createCanvas(newWidth, newHeight);
-    let outputCtx = outputCan.getContext('2d');
+    //Brick image
+    const brickImageWidth = (newWidth / sampleSize) * 32;
+    const brickImageHeight = (newHeight / sampleSize) * 32;
+    console.log(`brickImageWidth: ${brickImageWidth} brickImageHeight: ${brickImageHeight}`);
+    const brickImageCan = Canvas.createCanvas(brickImageWidth, brickImageHeight);
+    let brickImageCtx = brickImageCan.getContext('2d');
+    // Load Imgs
+    const brickImgs = {};
+    for (const hex of HEX_COLOUR_PALETTE) {
+        const name = hex.substring(1);
+        const blockImgPath = new URL(`../../resources/bricks/${name}_32x32.png`, import.meta.url);
+        const blockImg = await Canvas.loadImage(blockImgPath.pathname);
+        brickImgs[name] = blockImg;
+    }
 
     for (let y = 0; y < newHeight; y += sampleSize) {
         for (let x = 0; x < newWidth; x += sampleSize) {
@@ -158,13 +169,11 @@ const pixelateImage = async (src, boardSize) => {
             // Find closest RGB colour in palette
             const match = closestColourInPalette(rAvg, gAvg, bAvg);
 
-            outputCtx.fillStyle =
-                'rgba(' + match[0] + ',' + match[1] + ',' + match[2] + ',' + 1 + ')';
-            outputCtx.fillRect(x, y, sampleSize, sampleSize);
+            brickImageCtx.drawImage(brickImgs[convert.rgb.hex(match)], (x / sampleSize) * 32, (y / sampleSize) * 32);
         }
     }
 
-    const output = outputCan.toBuffer('image/jpeg', { quality: 0.75 });
+    const output = brickImageCan.toBuffer('image/jpeg', { quality: 0.75 });
 
     console.timeEnd('pixelate');
     console.groupEnd();
