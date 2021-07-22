@@ -11,7 +11,7 @@ const removeBackground = async (img) => {
     formData.append('image_file', img);
     formData.append('type', 'auto');
     formData.append('format', 'jpg');
-    formData.append('bg_color', '#7FCAE0');
+    formData.append('bg_color', '7FCAE0');
 
     const resp = await fetch(REMOVE_BG_URL, {
         method: 'POST',
@@ -22,10 +22,12 @@ const removeBackground = async (img) => {
     });
 
     // TODO: Error Checking and Catch
-    if (resp.statusCode != 200) {
+    if (!resp.ok) {
         console.error('Error on removeBg: ' + resp.statusCode);
     }
 
     console.timeEnd('removeBg');
-    return resp;
+    return resp.buffer();
 };
+
+export { removeBackground };
