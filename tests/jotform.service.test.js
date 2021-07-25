@@ -30,5 +30,5 @@ describe('JotForm', () => {
 
         const img = await cartoonifyJotFormImage(formId, subId, fileName);
         expect(img).toBeDefined();
-    });
+    }, 50000);
 });

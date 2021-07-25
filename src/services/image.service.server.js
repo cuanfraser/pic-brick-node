@@ -46,12 +46,11 @@ const pixelateImage = async (src, boardSize) => {
         heightBlocks = 96;
     }
 
-    const { newWidth, newHeight, widthCrop, heightCrop } = cropImageToBoardSize(
-        widthBlocks,
-        heightBlocks,
-        originalWidth,
-        originalHeight
-    );
+    const { newWidth, newHeight, widthCrop, heightCrop, newWidthBlocks, newHeightBlocks } =
+        cropImageToBoardSize(widthBlocks, heightBlocks, originalWidth, originalHeight);
+
+    widthBlocks = newWidthBlocks;
+    heightBlocks = newHeightBlocks;
 
     const can = Canvas.createCanvas(newWidth, newHeight);
     let ctx = can.getContext('2d');
@@ -106,11 +105,7 @@ const pixelateImage = async (src, boardSize) => {
             // Find closest RGB colour in palette
             const match = closestColourInPalette(rAvg, gAvg, bAvg);
 
-            brickImageCtx.drawImage(
-                brickImgs[convert.rgb.hex(match)],
-                (x / sampleSize) * 32,
-                (y / sampleSize) * 32
-            );
+            brickImageCtx.drawImage(brickImgs[match], (x / sampleSize) * 32, (y / sampleSize) * 32);
         }
     }
 
@@ -122,11 +117,10 @@ const pixelateImage = async (src, boardSize) => {
     return output;
 };
 
+// Finds closest hex colour in colour palette when given RGB val
 const closestColourInPalette = (r, g, b) => {
     const matcher = nearestColour.from(HEX_COLOUR_PALETTE);
-    const hexMatch = matcher(`rgb(${r}, ${g}, ${b})`);
-    const rgbOutput = convert.hex.rgb(hexMatch);
-    return rgbOutput;
+    return matcher(`rgb(${r}, ${g}, ${b})`);
 };
 
 const cropImageToBoardSize = (widthBlocks, heightBlocks, originalWidth, originalHeight) => {
@@ -183,7 +177,9 @@ const cropImageToBoardSize = (widthBlocks, heightBlocks, originalWidth, original
     const newHeight = ratioCropHeight - modCropH;
     const widthCrop = modCropW + cropW;
     const heightCrop = modCropH + cropH;
-    const output = { newWidth, newHeight, widthCrop, heightCrop };
+    const newWidthBlocks = widthBlocks;
+    const newHeightBlocks = heightBlocks;
+    const output = { newWidth, newHeight, widthCrop, heightCrop, newWidthBlocks, newHeightBlocks };
     console.log('Crop Output: ');
     console.dir(output);
 
