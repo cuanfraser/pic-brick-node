@@ -20,7 +20,7 @@ const cartoonifyImage = async (img) => {
     return resp;
 };
 
-const pixelateImage = async (src, boardSize) => {
+const pixelateImage = async (src, widthBlocks, heightBlocks) => {
     console.group(['Pixelate Image']);
     console.time('pixelate');
 
@@ -29,22 +29,6 @@ const pixelateImage = async (src, boardSize) => {
     const originalHeight = img.height;
 
     console.log(`originalWidth: ${originalWidth} originalHeight: ${originalHeight}`);
-
-    // Calculate Sample Size based on Physical Size
-    console.log(boardSize);
-    let widthBlocks = 64;
-    let heightBlocks = 64;
-    // Sample Size = (Res / Blocks #)
-    if (boardSize === 'Small 64x64') {
-        widthBlocks = 64;
-        heightBlocks = 64;
-    } else if (boardSize === 'Medium 96x64') {
-        widthBlocks = 96;
-        heightBlocks = 64;
-    } else if (boardSize === 'Large 96x96') {
-        widthBlocks = 96;
-        heightBlocks = 96;
-    }
 
     const { newWidth, newHeight, widthCrop, heightCrop, newWidthBlocks, newHeightBlocks } =
         cropImageToBoardSize(widthBlocks, heightBlocks, originalWidth, originalHeight);
@@ -73,8 +57,8 @@ const pixelateImage = async (src, boardSize) => {
     console.log('Sample Size: ' + sampleSize);
 
     //Brick image
-    const brickImageWidth = (newWidth / sampleSize) * 32;
-    const brickImageHeight = (newHeight / sampleSize) * 32;
+    const brickImageWidth = widthBlocks * 32;
+    const brickImageHeight = heightBlocks * 32;
     console.log(`brickImageWidth: ${brickImageWidth} brickImageHeight: ${brickImageHeight}`);
     const brickImageCan = Canvas.createCanvas(brickImageWidth, brickImageHeight);
     let brickImageCtx = brickImageCan.getContext('2d');

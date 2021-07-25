@@ -29,10 +29,27 @@ const cartoonifyJotFormImage = async (formId, subId, fileName) => {
     }
 };
 
-const pixelateJotFormImage = async (formId, subId, fileName, size) => {
+const pixelateJotFormImage = async (formId, subId, fileName, boardSize) => {
     const cartoon = await cartoonifyJotFormImage(formId, subId, fileName);
     const noBg = await removeBackground(cartoon);
-    return pixelateImage(noBg, size);
+
+    // Calculate Sample Size based on Physical Size
+    console.log(boardSize);
+    let widthBlocks = 64;
+    let heightBlocks = 64;
+    // Sample Size = (Res / Blocks #)
+    if (boardSize === 'Small 64x64') {
+        widthBlocks = 64;
+        heightBlocks = 64;
+    } else if (boardSize === 'Medium 96x64') {
+        widthBlocks = 96;
+        heightBlocks = 64;
+    } else if (boardSize === 'Large 96x96') {
+        widthBlocks = 96;
+        heightBlocks = 96;
+    }
+
+    return pixelateImage(noBg, widthBlocks, heightBlocks);
 };
 
 export { getJotFormImage, cartoonifyJotFormImage, pixelateJotFormImage };
