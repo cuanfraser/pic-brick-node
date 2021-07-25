@@ -1,5 +1,5 @@
 import { HEX_COLOUR_PALETTE } from '../constants.js';
-import { brickImgs } from './file.service.server.js';
+import { brickImgs } from './file.service.js';
 import Canvas from 'canvas';
 import nearestColour from 'nearest-color';
 

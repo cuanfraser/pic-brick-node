@@ -1,4 +1,4 @@
-import { makePicBrickFromJotForm } from '../services/jotform.service.server.js';
+import { makePicBrickFromJotForm } from '../services/jotform.service.js';
 
 export default (app) => {
     app.post('/api/jotform', async (req, res) => {

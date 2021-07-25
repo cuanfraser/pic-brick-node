@@ -1,8 +1,8 @@
 import fetch from 'node-fetch';
 import { JOTFORM_UPLOAD_URL, JOTFORM_USERNAME, JOTFORM_API_KEY } from '../constants.js';
-import { pixelateImage } from './image.service.server.js';
-import { removeBackground } from './removebg.service.server.js';
-import { cartoonifyImage } from './cartoonify.service.server.js';
+import { pixelateImage } from './image.service.js';
+import { removeBackground } from './removebg.service.js';
+import { cartoonifyImage } from './cartoonify.service.js';
 
 const getJotFormImage = async (formId, subId, fileName) => {
     console.time('jotImage');

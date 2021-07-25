@@ -13,7 +13,7 @@ app.use(function (req, res, next) {
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
 
-import jotformController from './controllers/jotform.controller.server.js';
+import jotformController from './controllers/jotform.controller.js';
 jotformController(app);
 
 app.listen(port, () => console.log('Listening on port ' + port));
