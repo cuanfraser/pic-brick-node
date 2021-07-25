@@ -29,5 +29,5 @@ describe('JotForm', () => {
 
         const img = await makePicBrickFromJotForm(formId, subId, fileName);
         expect(img).toBeDefined();
-    }, 30000);
+    }, 50000);
 });
