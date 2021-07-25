@@ -1,5 +1,6 @@
 import Sharp from 'sharp';
 
+// img: buffer
 const processInputImage = async (img) => {
     const outputImg = Sharp(img, {})
         .sharpen()
@@ -12,6 +13,16 @@ const processInputImage = async (img) => {
 
     return outputImg;
 };
+
+// img: buffer
+const processOutputImage = async (img) => {
+    const outputImg = Sharp(img, {})
+        .withMetadata()
+        .jpeg()
+        .toBuffer();
+
+    return outputImg;
+}
 
 const cropImageToBoardSize = (widthBlocks, heightBlocks, originalWidth, originalHeight) => {
     console.groupCollapsed(['Crop Image']);
@@ -80,4 +91,4 @@ const cropImageToBoardSize = (widthBlocks, heightBlocks, originalWidth, original
     return output;
 };
 
-export { cropImageToBoardSize, processInputImage };
+export { cropImageToBoardSize, processInputImage, processOutputImage };

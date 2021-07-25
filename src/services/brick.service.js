@@ -21,6 +21,8 @@ const closestColourInPalette = (r, g, b) => {
     return matcher(`rgb(${r}, ${g}, ${b})`);
 };
 
+
+// Make image into pixelated area reped by bricks
 const pixelateImage = async (src, widthBlocks, heightBlocks) => {
     console.groupCollapsed(['Pixelate Image']);
     console.time('pixelate');
