@@ -4,7 +4,7 @@ import Canvas from 'canvas';
 import nearestColour from 'nearest-color';
 
 const pixelateImage = async (src, widthBlocks, heightBlocks) => {
-    console.group(['Pixelate Image']);
+    console.groupCollapsed(['Pixelate Image']);
     console.time('pixelate');
 
     const img = await Canvas.loadImage(src);
