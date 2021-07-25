@@ -21,9 +21,8 @@ const removeBackground = async (img) => {
         },
     });
 
-    // TODO: Error Checking and Catch
     if (!resp.ok) {
-        console.error('Error on removeBg: ' + resp.statusCode);
+        throw new Error(`remove.bg error code: ${resp.statusCode}`)
     }
 
     console.timeEnd('removeBg');

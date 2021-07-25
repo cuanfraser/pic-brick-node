@@ -107,7 +107,7 @@ const pixelateImage = async (src, boardSize) => {
             const match = closestColourInPalette(rAvg, gAvg, bAvg);
 
             brickImageCtx.drawImage(
-                brickImgs[convert.rgb.hex(match)],
+                brickImgs[match],
                 (x / sampleSize) * 32,
                 (y / sampleSize) * 32
             );
@@ -124,9 +124,7 @@ const pixelateImage = async (src, boardSize) => {
 
 const closestColourInPalette = (r, g, b) => {
     const matcher = nearestColour.from(HEX_COLOUR_PALETTE);
-    const hexMatch = matcher(`rgb(${r}, ${g}, ${b})`);
-    const rgbOutput = convert.hex.rgb(hexMatch);
-    return rgbOutput;
+    return matcher(`rgb(${r}, ${g}, ${b})`);
 };
 
 const cropImageToBoardSize = (widthBlocks, heightBlocks, originalWidth, originalHeight) => {
