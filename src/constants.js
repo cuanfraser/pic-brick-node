@@ -8,6 +8,8 @@ export const CARTOON_API_URL =
 export const REMOVE_BG_URL = 'https://api.remove.bg/v1.0/removebg';
 export const REMOVE_BG_API_KEY = process.env.REMOVE_BG_API_KEY;
 
+export const HEX_BACKGROUND_COLOUR = '#7FCAE0';
+
 export const HEX_COLOUR_PALETTE = [
     '#E58E93',
     '#DF291E',

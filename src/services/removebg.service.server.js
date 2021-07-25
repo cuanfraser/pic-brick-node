@@ -1,4 +1,4 @@
-import { REMOVE_BG_API_KEY, REMOVE_BG_URL } from '../constants.js';
+import { HEX_BACKGROUND_COLOUR, REMOVE_BG_API_KEY, REMOVE_BG_URL } from '../constants.js';
 import fetch from 'node-fetch';
 import FormData from 'form-data';
 
@@ -11,7 +11,8 @@ const removeBackground = async (img) => {
     formData.append('image_file', img);
     formData.append('type', 'auto');
     formData.append('format', 'jpg');
-    formData.append('bg_color', '7FCAE0');
+    const bgCol = HEX_BACKGROUND_COLOUR.substring(1);
+    formData.append('bg_color', bgCol);
 
     const resp = await fetch(REMOVE_BG_URL, {
         method: 'POST',
