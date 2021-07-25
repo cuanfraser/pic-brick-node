@@ -155,4 +155,4 @@ const cropImageToBoardSize = (widthBlocks, heightBlocks, originalWidth, original
     return output;
 };
 
-export { pixelateImage, closestColourInPalette };
+export { pixelateImage, closestColourInPalette, cropImageToBoardSize };
