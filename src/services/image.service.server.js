@@ -122,6 +122,7 @@ const pixelateImage = async (src, boardSize) => {
     return output;
 };
 
+// Finds closest hex colour in colour palette when given RGB val
 const closestColourInPalette = (r, g, b) => {
     const matcher = nearestColour.from(HEX_COLOUR_PALETTE);
     return matcher(`rgb(${r}, ${g}, ${b})`);
