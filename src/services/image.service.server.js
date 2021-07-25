@@ -1,24 +1,7 @@
-import fetch from 'node-fetch';
-import FormData from 'form-data';
-import { CARTOON_API_URL, HEX_COLOUR_PALETTE } from '../constants.js';
+import { HEX_COLOUR_PALETTE } from '../constants.js';
 import { brickImgs } from './file.service.server.js';
 import Canvas from 'canvas';
-import convert from 'color-convert';
 import nearestColour from 'nearest-color';
-
-const cartoonifyImage = async (img) => {
-    console.time('cartoon');
-    const formData = new FormData();
-    formData.append('file_type', 'image');
-    formData.append('source', img, 'input image.jpg');
-    const resp = await fetch(CARTOON_API_URL, {
-        method: 'POST',
-        body: formData,
-    });
-
-    console.timeEnd('cartoon');
-    return resp;
-};
 
 const pixelateImage = async (src, widthBlocks, heightBlocks) => {
     console.group(['Pixelate Image']);
@@ -172,4 +155,4 @@ const cropImageToBoardSize = (widthBlocks, heightBlocks, originalWidth, original
     return output;
 };
 
-export { cartoonifyImage, pixelateImage, closestColourInPalette, cropImageToBoardSize };
+export { pixelateImage, closestColourInPalette, cropImageToBoardSize };

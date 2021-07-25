@@ -1,7 +1,8 @@
 import fetch from 'node-fetch';
 import { JOTFORM_UPLOAD_URL, JOTFORM_USERNAME, JOTFORM_API_KEY } from '../constants.js';
-import { cartoonifyImage, pixelateImage } from './image.service.server.js';
+import { pixelateImage } from './image.service.server.js';
 import { removeBackground } from './removebg.service.server.js';
+import { cartoonifyImage } from './cartoonify.service.server.js';
 
 const getJotFormImage = async (formId, subId, fileName) => {
     console.time('jotImage');
@@ -22,11 +23,7 @@ const cartoonifyJotFormImage = async (formId, subId, fileName) => {
     const image = await getJotFormImage(formId, subId, fileName);
     const resp = await cartoonifyImage(image);
 
-    if (resp.ok) {
-        return resp.buffer();
-    } else {
-        throw new Error('Failed cartoonifying image');
-    }
+    return resp;
 };
 
 const pixelateJotFormImage = async (formId, subId, fileName, boardSize) => {
