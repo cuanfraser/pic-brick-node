@@ -1,9 +1,8 @@
 import fetch from 'node-fetch';
 import {
     getJotFormImage,
-    cartoonifyJotFormImage,
-    pixelateJotFormImage,
-} from '../src/services/jotform.service.server.js';
+    makePicBrickFromJotForm,
+} from '../src/services/jotform.service.js';
 
 describe('JotForm', () => {
     test('JotForm Sample Image URL Active', async () => {
@@ -23,12 +22,12 @@ describe('JotForm', () => {
         expect(img).toBeDefined();
     });
 
-    test('Cartoonify JotForm Image Response', async () => {
+    test('makePicBrickFromJotForm Response', async () => {
         const formId = '211827483647060';
         const subId = '5012321919365964060';
         const fileName = 'Logan_Rock_Treen_closeup.jpg';
 
-        const img = await cartoonifyJotFormImage(formId, subId, fileName);
+        const img = await makePicBrickFromJotForm(formId, subId, fileName);
         expect(img).toBeDefined();
     }, 50000);
 });

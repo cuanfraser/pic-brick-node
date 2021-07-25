@@ -1,57 +1,22 @@
-import fetch from 'node-fetch';
-import FormData from 'form-data';
-import { CARTOON_API_URL, HEX_COLOUR_PALETTE } from '../constants.js';
-import { brickImgs } from './file.service.server.js';
+import { HEX_COLOUR_PALETTE } from '../constants.js';
+import { brickImgs } from './file.service.js';
 import Canvas from 'canvas';
-import convert from 'color-convert';
 import nearestColour from 'nearest-color';
 
-const cartoonifyImage = async (img) => {
-    console.time('cartoon');
-    const formData = new FormData();
-    formData.append('file_type', 'image');
-    formData.append('source', img, 'input image.jpg');
-    const resp = await fetch(CARTOON_API_URL, {
-        method: 'POST',
-        body: formData,
-    });
-
-    console.timeEnd('cartoon');
-    return resp;
-};
-
-const pixelateImage = async (src, boardSize) => {
-    console.group(['Pixelate Image']);
+const pixelateImage = async (src, widthBlocks, heightBlocks) => {
+    console.groupCollapsed(['Pixelate Image']);
     console.time('pixelate');
 
     const img = await Canvas.loadImage(src);
-    const originalWidth = img.width;
-    const originalHeight = img.height;
 
-    console.log(`originalWidth: ${originalWidth} originalHeight: ${originalHeight}`);
-
-    // Calculate Sample Size based on Physical Size
-    console.log(boardSize);
-    let widthBlocks = 64;
-    let heightBlocks = 64;
-    // Sample Size = (Res / Blocks #)
-    if (boardSize === 'Small 64x64') {
-        widthBlocks = 64;
-        heightBlocks = 64;
-    } else if (boardSize === 'Medium 96x64') {
-        widthBlocks = 96;
-        heightBlocks = 64;
-    } else if (boardSize === 'Large 96x96') {
-        widthBlocks = 96;
-        heightBlocks = 96;
-    }
-
+    // Get cropped values
     const { newWidth, newHeight, widthCrop, heightCrop, newWidthBlocks, newHeightBlocks } =
-        cropImageToBoardSize(widthBlocks, heightBlocks, originalWidth, originalHeight);
-
+        cropImageToBoardSize(widthBlocks, heightBlocks, img.width, img.height);
+    // Rotation swaps these
     widthBlocks = newWidthBlocks;
     heightBlocks = newHeightBlocks;
 
+    // Create Canvas to draw cropped image on to analyze colours
     const can = Canvas.createCanvas(newWidth, newHeight);
     let ctx = can.getContext('2d');
     ctx.drawImage(
@@ -66,15 +31,15 @@ const pixelateImage = async (src, boardSize) => {
         newHeight
     );
 
-    // Get pixel array
+    // Get pixel array where each pixel is 4 slots (RGBA)
     let pixelArr = ctx.getImageData(0, 0, newWidth, newHeight).data;
 
     let sampleSize = newWidth / widthBlocks;
     console.log('Sample Size: ' + sampleSize);
 
     //Brick image
-    const brickImageWidth = (newWidth / sampleSize) * 32;
-    const brickImageHeight = (newHeight / sampleSize) * 32;
+    const brickImageWidth = widthBlocks * 32;
+    const brickImageHeight = heightBlocks * 32;
     console.log(`brickImageWidth: ${brickImageWidth} brickImageHeight: ${brickImageHeight}`);
     const brickImageCan = Canvas.createCanvas(brickImageWidth, brickImageHeight);
     let brickImageCtx = brickImageCan.getContext('2d');
@@ -125,6 +90,8 @@ const closestColourInPalette = (r, g, b) => {
 
 const cropImageToBoardSize = (widthBlocks, heightBlocks, originalWidth, originalHeight) => {
     console.groupCollapsed(['Crop Image']);
+
+    console.log(`originalWidth: ${originalWidth} originalHeight: ${originalHeight}`);
 
     // Crop to correct aspect ratio
     const boardRatio = widthBlocks / heightBlocks;
@@ -188,4 +155,4 @@ const cropImageToBoardSize = (widthBlocks, heightBlocks, originalWidth, original
     return output;
 };
 
-export { cartoonifyImage, pixelateImage, closestColourInPalette, cropImageToBoardSize };
+export { pixelateImage, closestColourInPalette, cropImageToBoardSize };

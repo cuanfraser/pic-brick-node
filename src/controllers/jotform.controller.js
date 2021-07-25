@@ -1,6 +1,4 @@
-import { cartoonifyImage } from '../services/image.service.server.js';
-import { get } from 'lodash-es';
-import { pixelateJotFormImage } from '../services/jotform.service.server.js';
+import { makePicBrickFromJotForm } from '../services/jotform.service.js';
 
 export default (app) => {
     app.post('/api/jotform', async (req, res) => {
@@ -11,7 +9,7 @@ export default (app) => {
             const files = [].concat(req.body['fileupload[]']);
             const size = req.body.size;
             for (const fileName of files) {
-                const image = await pixelateJotFormImage(formId, subId, fileName, size);
+                const image = await makePicBrickFromJotForm(formId, subId, fileName, size);
                 res.contentType('image/jpeg');
                 res.send(image);
                 break;
@@ -19,7 +17,7 @@ export default (app) => {
         } catch (error) {
             console.error(error);
             console.error(error.stack);
-            res.status(500).send('Error!');
+            res.status(500).send('Internal server error, please try again later.');
         }
         console.groupEnd();
     });

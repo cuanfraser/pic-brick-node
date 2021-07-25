@@ -2,7 +2,7 @@ import fetch from 'node-fetch';
 import {
     closestColourInPalette,
     cropImageToBoardSize,
-} from '../src/services/image.service.server.js';
+} from '../src/services/image.service.js';
 
 describe('closestColourInPalette Tests', () => {
     test('Chooses correct colour if given exact match', () => {
