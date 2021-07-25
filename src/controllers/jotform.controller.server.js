@@ -1,4 +1,4 @@
-import { pixelateJotFormImage } from '../services/jotform.service.server.js';
+import { makePicBrickFromJotForm } from '../services/jotform.service.server.js';
 
 export default (app) => {
     app.post('/api/jotform', async (req, res) => {
@@ -9,7 +9,7 @@ export default (app) => {
             const files = [].concat(req.body['fileupload[]']);
             const size = req.body.size;
             for (const fileName of files) {
-                const image = await pixelateJotFormImage(formId, subId, fileName, size);
+                const image = await makePicBrickFromJotForm(formId, subId, fileName, size);
                 res.contentType('image/jpeg');
                 res.send(image);
                 break;

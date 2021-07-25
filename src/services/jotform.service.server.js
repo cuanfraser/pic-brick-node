@@ -19,15 +19,9 @@ const getJotFormImage = async (formId, subId, fileName) => {
     }
 };
 
-const cartoonifyJotFormImage = async (formId, subId, fileName) => {
-    const image = await getJotFormImage(formId, subId, fileName);
-    const resp = await cartoonifyImage(image);
-
-    return resp;
-};
-
-const pixelateJotFormImage = async (formId, subId, fileName, boardSize) => {
-    const cartoon = await cartoonifyJotFormImage(formId, subId, fileName);
+const makePicBrickFromJotForm = async (formId, subId, fileName, boardSize) => {
+    const originalImage = await getJotFormImage(formId, subId, fileName);
+    const cartoon = await cartoonifyImage(originalImage);
     const noBg = await removeBackground(cartoon);
 
     // Calculate Sample Size based on Physical Size
@@ -49,4 +43,4 @@ const pixelateJotFormImage = async (formId, subId, fileName, boardSize) => {
     return pixelateImage(noBg, widthBlocks, heightBlocks);
 };
 
-export { getJotFormImage, cartoonifyJotFormImage, pixelateJotFormImage };
+export { getJotFormImage, makePicBrickFromJotForm };
