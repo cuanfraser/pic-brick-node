@@ -8,7 +8,7 @@ const brickImgs = {};
         const name = hex.substring(1);
         const blockImgPath = new URL(`../../resources/bricks/${name}_32x32.png`, import.meta.url);
         const blockImg = await Canvas.loadImage(blockImgPath.pathname);
-        brickImgs[hex] = blockImg;
+        brickImgs[name] = blockImg;
     }
 })();
 
