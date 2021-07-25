@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
 import { JOTFORM_UPLOAD_URL, JOTFORM_USERNAME, JOTFORM_API_KEY } from '../constants.js';
-import { cartoonifyImage, makeImageBricks } from './image.service.server.js';
+import { cartoonifyImage, pixelateImage } from './image.service.server.js';
 
 const getJotFormImage = async (formId, subId, fileName) => {
     console.time('jotImage');
@@ -28,22 +28,9 @@ const cartoonifyJotFormImage = async (formId, subId, fileName) => {
     }
 };
 
-const pixelateJotFormImage = async (formId, subId, fileName, boardSize) => {
+const pixelateJotFormImage = async (formId, subId, fileName, size) => {
     const cartoon = await cartoonifyJotFormImage(formId, subId, fileName);
-
-    let widthBlocks = 64;
-    let heightBlocks = 64;
-    if (boardSize === 'Small 64x64') {
-        widthBlocks = 64;
-        heightBlocks = 64;
-    } else if (boardSize === 'Medium 96x64') {
-        widthBlocks = 96;
-        heightBlocks = 64;
-    } else if (boardSize === 'Large 96x96') {
-        widthBlocks = 96;
-        heightBlocks = 96;
-    }
-    return makeImageBricks(cartoon, widthBlocks, heightBlocks);
+    return pixelateImage(cartoon, size);
 };
 
 export { getJotFormImage, cartoonifyJotFormImage, pixelateJotFormImage };

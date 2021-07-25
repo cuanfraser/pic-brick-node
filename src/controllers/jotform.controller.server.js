@@ -11,8 +11,7 @@ export default (app) => {
             const files = [].concat(req.body['fileupload[]']);
             const size = req.body.size;
             for (const fileName of files) {
-                const brickPlan = await pixelateJotFormImage(formId, subId, fileName, size);
-                const image = brickPlan.finalImage;
+                const image = await pixelateJotFormImage(formId, subId, fileName, size);
                 res.contentType('image/jpeg');
                 res.send(image);
                 break;

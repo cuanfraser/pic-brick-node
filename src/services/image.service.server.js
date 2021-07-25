@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
 import FormData from 'form-data';
-import { CARTOON_API_URL, HEX_COLOUR_PALETTE, HEX_COLOUR_NUM_MAP } from '../constants.js';
+import { CARTOON_API_URL, HEX_COLOUR_PALETTE } from '../constants.js';
 import { brickImgs } from './file.service.server.js';
 import Canvas from 'canvas';
 import convert from 'color-convert';
@@ -20,7 +20,7 @@ const cartoonifyImage = async (img) => {
     return resp;
 };
 
-const makeImageBricks = async (src, widthBlocks, heightBlocks) => {
+const pixelateImage = async (src, boardSize) => {
     console.group(['Pixelate Image']);
     console.time('pixelate');
 
@@ -29,6 +29,22 @@ const makeImageBricks = async (src, widthBlocks, heightBlocks) => {
     const originalHeight = img.height;
 
     console.log(`originalWidth: ${originalWidth} originalHeight: ${originalHeight}`);
+
+    // Calculate Sample Size based on Physical Size
+    console.log(boardSize);
+    let widthBlocks = 64;
+    let heightBlocks = 64;
+    // Sample Size = (Res / Blocks #)
+    if (boardSize === 'Small 64x64') {
+        widthBlocks = 64;
+        heightBlocks = 64;
+    } else if (boardSize === 'Medium 96x64') {
+        widthBlocks = 96;
+        heightBlocks = 64;
+    } else if (boardSize === 'Large 96x96') {
+        widthBlocks = 96;
+        heightBlocks = 96;
+    }
 
     const { newWidth, newHeight, widthCrop, heightCrop } = cropImageToBoardSize(
         widthBlocks,
@@ -58,23 +74,11 @@ const makeImageBricks = async (src, widthBlocks, heightBlocks) => {
     console.log('Sample Size: ' + sampleSize);
 
     //Brick image
-    const brickImageWidth = widthBlocks * 32;
-    const brickImageHeight = heightBlocks * 32;
+    const brickImageWidth = (newWidth / sampleSize) * 32;
+    const brickImageHeight = (newHeight / sampleSize) * 32;
     console.log(`brickImageWidth: ${brickImageWidth} brickImageHeight: ${brickImageHeight}`);
     const brickImageCan = Canvas.createCanvas(brickImageWidth, brickImageHeight);
     let brickImageCtx = brickImageCan.getContext('2d');
-
-    // Instructions 2D Array
-    const instructionsArr = new Array(heightBlocks);
-    for (let i = 0; i < instructionsArr.length; i++) {
-        instructionsArr[i] = new Array(widthBlocks);
-    }
-
-    // Colour Count
-    const colourCountMap = new Map();
-    for (const hex of HEX_COLOUR_PALETTE) {
-        colourCountMap.set(hex, 0);
-    }
 
     for (let y = 0; y < newHeight; y += sampleSize) {
         for (let x = 0; x < newWidth; x += sampleSize) {
@@ -102,15 +106,15 @@ const makeImageBricks = async (src, widthBlocks, heightBlocks) => {
             // Find closest RGB colour in palette
             const match = closestColourInPalette(rAvg, gAvg, bAvg);
 
-            instructionsArr[y / sampleSize][x / sampleSize] = HEX_COLOUR_NUM_MAP.get(match);
-            colourCountMap.set(match, colourCountMap.get(match) + 1);
-
-            brickImageCtx.drawImage(brickImgs[match], (x / sampleSize) * 32, (y / sampleSize) * 32);
+            brickImageCtx.drawImage(
+                brickImgs[convert.rgb.hex(match)],
+                (x / sampleSize) * 32,
+                (y / sampleSize) * 32
+            );
         }
     }
 
-    const finalImage = brickImageCan.toBuffer('image/jpeg', { quality: 0.75 });
-    const output = { finalImage, instructionsArr, colourCountMap };
+    const output = brickImageCan.toBuffer('image/jpeg', { quality: 0.75 });
 
     console.timeEnd('pixelate');
     console.groupEnd();
@@ -121,7 +125,8 @@ const makeImageBricks = async (src, widthBlocks, heightBlocks) => {
 const closestColourInPalette = (r, g, b) => {
     const matcher = nearestColour.from(HEX_COLOUR_PALETTE);
     const hexMatch = matcher(`rgb(${r}, ${g}, ${b})`);
-    return hexMatch;
+    const rgbOutput = convert.hex.rgb(hexMatch);
+    return rgbOutput;
 };
 
 const cropImageToBoardSize = (widthBlocks, heightBlocks, originalWidth, originalHeight) => {
@@ -187,4 +192,4 @@ const cropImageToBoardSize = (widthBlocks, heightBlocks, originalWidth, original
     return output;
 };
 
-export { cartoonifyImage, makeImageBricks, closestColourInPalette, cropImageToBoardSize };
+export { cartoonifyImage, pixelateImage, closestColourInPalette, cropImageToBoardSize };

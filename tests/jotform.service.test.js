@@ -1,7 +1,8 @@
 import fetch from 'node-fetch';
 import {
     getJotFormImage,
-    cartoonifyJotFormImage
+    cartoonifyJotFormImage,
+    pixelateJotFormImage,
 } from '../src/services/jotform.service.server.js';
 
 describe('JotForm', () => {
