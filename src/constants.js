@@ -1,3 +1,4 @@
+// development, testing, production
 export const NODE_ENV = process.env.NODE_ENV;
 
 export const JOTFORM_USERNAME = process.env.JOTFORM_USERNAME;
