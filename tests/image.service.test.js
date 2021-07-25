@@ -1,15 +1,4 @@
-import fetch from 'node-fetch';
-import {
-    closestColourInPalette,
-    cropImageToBoardSize,
-} from '../src/services/image.service.js';
-
-describe('closestColourInPalette Tests', () => {
-    test('Chooses correct colour if given exact match', () => {
-        const output = closestColourInPalette(215, 135, 57, 1);
-        expect(output).toEqual('#D78739');
-    });
-});
+import { cropImageToBoardSize } from '../src/services/image.service.js';
 
 describe('cropImageToBoardSize Tests', () => {
     test('No crop on perfect square with no mod', () => {

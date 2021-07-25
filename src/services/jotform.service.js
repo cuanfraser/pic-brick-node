@@ -1,6 +1,7 @@
 import fetch from 'node-fetch';
 import { JOTFORM_UPLOAD_URL, JOTFORM_USERNAME, JOTFORM_API_KEY } from '../constants.js';
-import { pixelateImage } from './image.service.js';
+import { processInputImage } from './image.service.js';
+import { pixelateImage } from './brick.service.js'
 import { removeBackground } from './removebg.service.js';
 import { cartoonifyImage } from './cartoonify.service.js';
 
@@ -21,7 +22,8 @@ const getJotFormImage = async (formId, subId, fileName) => {
 
 const makePicBrickFromJotForm = async (formId, subId, fileName, boardSize) => {
     const originalImage = await getJotFormImage(formId, subId, fileName);
-    const cartoon = await cartoonifyImage(originalImage);
+    const modifiedImage = await processInputImage(originalImage);
+    const cartoon = await cartoonifyImage(modifiedImage);
     const noBg = await removeBackground(cartoon);
 
     // Calculate Sample Size based on Physical Size
