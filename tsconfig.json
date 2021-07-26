@@ -1,0 +1,16 @@
+{
+    "extends": "@tsconfig/node12/tsconfig.json",
+
+    "compilerOptions": {
+        "outDir": "./built",
+        "module": "es2015",
+        "moduleResolution": "node",
+        "allowJs": true,
+        "target": "es2020"
+    },
+    "include": ["./src/**/*"],
+    "exclude": ["node_modules", "reference", "resources", "**/*.spec.ts"],
+    "typeAcquisition": {
+        "include": ["jest"]
+    }
+}
