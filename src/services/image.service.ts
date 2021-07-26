@@ -1,7 +1,6 @@
 import Sharp from 'sharp';
 
-// img: buffer
-const processInputImage = async (img) => {
+const processInputImage = async (img: Buffer): Promise<Buffer> => {
     const outputImg = Sharp(img, {})
         .sharpen()
         .modulate({
@@ -14,17 +13,25 @@ const processInputImage = async (img) => {
     return outputImg;
 };
 
-// img: buffer
-const processOutputImage = async (img) => {
-    const outputImg = Sharp(img, {})
-        .withMetadata()
-        .jpeg()
-        .toBuffer();
+const processOutputImage = async (img: Buffer): Promise<Buffer> => {
+    const outputImg = Sharp(img, {}).withMetadata().jpeg().toBuffer();
 
     return outputImg;
-}
+};
 
-const cropImageToBoardSize = (widthBlocks, heightBlocks, originalWidth, originalHeight) => {
+const cropImageToBoardSize = (
+    widthBlocks: number,
+    heightBlocks: number,
+    originalWidth: number,
+    originalHeight: number
+): {
+    newWidth: number;
+    newHeight: number;
+    widthCrop: number;
+    heightCrop: number;
+    newWidthBlocks: number;
+    newHeightBlocks: number;
+} => {
     console.groupCollapsed(['Crop Image']);
 
     console.log(`originalWidth: ${originalWidth} originalHeight: ${originalHeight}`);

@@ -3,7 +3,7 @@ import { HEX_COLOUR_PALETTE } from '../constants.js';
 import { cropImageToBoardSize } from './image.service.js';
 import nearestColour from 'nearest-color';
 
-const brickImgs = {};
+const brickImgs: { [key: string]: Canvas.Image; } = {};
 // Load images of individual bricks
 (async () => {
     // For each hex colour, load image and set as canvas image object inside brickImgs array.
@@ -16,14 +16,14 @@ const brickImgs = {};
 })();
 
 // Finds closest hex colour in colour palette when given RGB val
-const closestColourInPalette = (r, g, b) => {
+const closestColourInPalette = (r: number, g: number, b: number): string => {
     const matcher = nearestColour.from(HEX_COLOUR_PALETTE);
     return matcher(`rgb(${r}, ${g}, ${b})`);
 };
 
 
 // Make image into pixelated area reped by bricks
-const pixelateImage = async (src, widthBlocks, heightBlocks) => {
+const pixelateImage = async (src: Buffer, widthBlocks: number, heightBlocks: number): Promise<Buffer> => {
     console.groupCollapsed(['Pixelate Image']);
     console.time('pixelate');
 
@@ -38,7 +38,7 @@ const pixelateImage = async (src, widthBlocks, heightBlocks) => {
 
     // Create Canvas to draw cropped image on to analyze colours
     const can = Canvas.createCanvas(newWidth, newHeight);
-    let ctx = can.getContext('2d');
+    const ctx = can.getContext('2d');
     ctx.drawImage(
         img,
         widthCrop / 2,
@@ -52,9 +52,9 @@ const pixelateImage = async (src, widthBlocks, heightBlocks) => {
     );
 
     // Get pixel array where each pixel is 4 slots (RGBA)
-    let pixelArr = ctx.getImageData(0, 0, newWidth, newHeight).data;
+    const pixelArr = ctx.getImageData(0, 0, newWidth, newHeight).data;
 
-    let sampleSize = newWidth / widthBlocks;
+    const sampleSize = newWidth / widthBlocks;
     console.log('Sample Size: ' + sampleSize);
 
     //Brick image
@@ -62,11 +62,11 @@ const pixelateImage = async (src, widthBlocks, heightBlocks) => {
     const brickImageHeight = heightBlocks * 32;
     console.log(`brickImageWidth: ${brickImageWidth} brickImageHeight: ${brickImageHeight}`);
     const brickImageCan = Canvas.createCanvas(brickImageWidth, brickImageHeight);
-    let brickImageCtx = brickImageCan.getContext('2d');
+    const brickImageCtx = brickImageCan.getContext('2d');
 
     for (let y = 0; y < newHeight; y += sampleSize) {
         for (let x = 0; x < newWidth; x += sampleSize) {
-            let p = (x + y * newWidth) * 4;
+            const p = (x + y * newWidth) * 4;
 
             // Average RGB vals over sample size
             //   Collect RGB values over sample size
