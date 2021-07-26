@@ -1,8 +1,7 @@
 import fetch from 'node-fetch';
 import {
-    getJotFormImage,
-    makePicBrickFromJotForm,
-} from '../src/services/jotform.service.js';
+    getJotFormImage
+} from '../services/jotform.service';
 
 describe('JotForm', () => {
     test('JotForm Sample Image URL Active', async () => {

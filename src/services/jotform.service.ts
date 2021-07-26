@@ -1,14 +1,13 @@
 import fetch from 'node-fetch';
-import { JOTFORM_UPLOAD_URL, JOTFORM_USERNAME, JOTFORM_API_KEY } from '../constants.js';
-import { processInputImage } from './image.service.js';
-import { pixelateImage } from './brick.service.js'
-import { removeBackground } from './removebg.service.js';
-import { cartoonifyImage } from './cartoonify.service.js';
+import { JOTFORM_UPLOAD_URL, JOTFORM_USERNAME } from '../constants';
+import { processInputImage } from './image.service';
+import { pixelateImage } from './brick.service'
+import { removeBackground } from './removebg.service';
+import { cartoonifyImage } from './cartoonify.service';
 
-const getJotFormImage = async (formId, subId, fileName) => {
+const getJotFormImage = async (formId: string, subId: string, fileName: string): Promise<Buffer> => {
     console.time('jotImage');
     const imageUrl = `${JOTFORM_UPLOAD_URL}/${JOTFORM_USERNAME}/${formId}/${subId}/${fileName}`;
-    const apiParam = `?apiKey=${JOTFORM_API_KEY}`;
     const url = imageUrl;
     console.log('JotForm Image Retrieval URL: ' + url);
     const resp = await fetch(url);
@@ -20,7 +19,7 @@ const getJotFormImage = async (formId, subId, fileName) => {
     }
 };
 
-const makePicBrickFromJotForm = async (formId, subId, fileName, boardSize) => {
+const makePicBrickFromJotForm = async (formId: string, subId: string, fileName: string, boardSize: string): Promise<Buffer> => {
     const originalImage = await getJotFormImage(formId, subId, fileName);
     const modifiedImage = await processInputImage(originalImage);
     const cartoon = await cartoonifyImage(modifiedImage);

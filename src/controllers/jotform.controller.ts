@@ -1,7 +1,8 @@
-import { makePicBrickFromJotForm } from '../services/jotform.service.js';
+import { Express, Request, Response } from 'express';
+import { makePicBrickFromJotForm } from '../services/jotform.service';
 
-export default (app) => {
-    app.post('/api/jotform', async (req, res) => {
+export default (app: Express): void => {
+    app.post('/api/jotform', async (req: Request, res: Response) => {
         console.groupCollapsed(['/api/jotform request']);
         try {
             const formId = req.body.formID;

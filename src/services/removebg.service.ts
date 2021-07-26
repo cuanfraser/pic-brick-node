@@ -1,8 +1,8 @@
-import { HEX_BACKGROUND_COLOUR, REMOVE_BG_API_KEY, REMOVE_BG_URL } from '../constants.js';
-import fetch from 'node-fetch';
+import { HEX_BACKGROUND_COLOUR, REMOVE_BG_API_KEY, REMOVE_BG_URL } from '../constants';
+import fetch, { Response } from 'node-fetch';
 import FormData from 'form-data';
 
-const removeBackground = async (img) => {
+const removeBackground = async (img: Buffer): Promise<Buffer> => {
     console.time('removeBg');
 
     const formData = new FormData();
@@ -14,16 +14,14 @@ const removeBackground = async (img) => {
     const bgCol = HEX_BACKGROUND_COLOUR.substring(1);
     formData.append('bg_color', bgCol);
 
-    const resp = await fetch(REMOVE_BG_URL, {
+    const resp: Response = await fetch(REMOVE_BG_URL, {
         method: 'POST',
         body: formData,
-        headers: {
-            'X-Api-Key': REMOVE_BG_API_KEY,
-        },
+        headers: REMOVE_BG_API_KEY ? { 'X-Api-Key': REMOVE_BG_API_KEY } : undefined,
     });
 
     if (!resp.ok) {
-        throw new Error(`remove.bg error code: ${resp.statusCode}`)
+        throw new Error(`remove.bg error: ${resp.statusText}`);
     }
 
     console.timeEnd('removeBg');
