@@ -18,9 +18,6 @@
         "node_modules",
         "reference",
         "resources",
-        "**/*.spec.ts",
-        "./plugins/**/*",
-        "./typings/**/*",
         "./dist/**/*"
     ]
 }
