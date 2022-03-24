@@ -5,15 +5,15 @@ import nearestColour from 'nearest-color';
 
 const brickImgs: { [key: string]: Canvas.Image; } = {};
 // Load images of individual bricks
-(async () => {
-    // For each hex colour, load image and set as canvas image object inside brickImgs array.
-    for (const hex of HEX_COLOUR_PALETTE) {
-        const name = hex.substring(1);
-        const blockImgPath = new URL(`../../resources/bricks/${name}_32x32.png`, import.meta.url);
-        const blockImg = await Canvas.loadImage(blockImgPath.pathname);
-        brickImgs[hex] = blockImg;
-    }
-})();
+// (async () => {
+//     // For each hex colour, load image and set as canvas image object inside brickImgs array.
+//     for (const hex of HEX_COLOUR_PALETTE) {
+//         const name = hex.substring(1);
+//         const blockImgPath = new URL(`../../resources/bricks/${name}_32x32.png`, import.meta.url);
+//         const blockImg = await Canvas.loadImage(blockImgPath.pathname);
+//         brickImgs[hex] = blockImg;
+//     }
+// })();
 
 // Finds closest hex colour in colour palette when given RGB val
 const closestColourInPalette = (r: number, g: number, b: number): string => {
