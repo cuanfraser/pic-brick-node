@@ -40,7 +40,7 @@ export const HEX_COLOUR_PALETTE = [
     '#6A6869',
     '#282828',
     // NEW COLOURS:
-    '#9f3fle',
+    '#984221',
     '#D38a55',
     '#Be9f8a',
     '#B76e45',
