@@ -2,10 +2,10 @@ import Sharp from 'sharp';
 
 const processInputImage = async (img: Buffer): Promise<Buffer> => {
     const outputImg = Sharp(img, {})
-        // .sharpen()
-        // .modulate({
-        //     brightness: 1.2,
-        // })
+        .sharpen()
+        .modulate({
+            brightness: 1.2,
+        })
         .withMetadata()
         .jpeg()
         .toBuffer();

@@ -1,6 +1,6 @@
 import Canvas from 'canvas';
 import { HEX_COLOUR_PALETTE } from '../constants';
-import { cropImageToBoardSize } from './image.service';
+import { cropImageToBoardSize, processOutputImage } from './image.service';
 import nearestColour from 'nearest-color';
 
 const brickImgs: { [key: string]: Canvas.Image; } = {};
@@ -101,7 +101,7 @@ const pixelateImage = async (src: Buffer, widthBlocks: number, heightBlocks: num
     console.timeEnd('pixelate');
     console.groupEnd();
 
-    return output;
+    return await processOutputImage(output);
 };
 
 export { brickImgs, pixelateImage, closestColourInPalette };
