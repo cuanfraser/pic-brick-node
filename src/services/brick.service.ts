@@ -92,7 +92,7 @@ const pixelateImage = async (src: Buffer, widthBlocks: number, heightBlocks: num
             // Find closest RGB colour in palette
             const match = closestColourInPalette(rAvg, gAvg, bAvg);
             const count = hexToCount.get(match);
-            hexToCount.set(match, count ? count : 1);
+            hexToCount.set(match, count ? count + 1 : 1);
 
             brickImageCtx.drawImage(brickImgs[match], (x / sampleSize) * 32, (y / sampleSize) * 32);
             // brickImageCtx.fillStyle = match;
