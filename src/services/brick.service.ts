@@ -4,16 +4,16 @@ import { cropImageToBoardSize } from './image.service';
 import nearestColour from 'nearest-color';
 
 const brickImgs: { [key: string]: Canvas.Image; } = {};
-// Load images of individual bricks
-// (async () => {
-//     // For each hex colour, load image and set as canvas image object inside brickImgs array.
-//     for (const hex of HEX_COLOUR_PALETTE) {
-//         const name = hex.substring(1);
-//         const blockImgPath = new URL(`../../resources/bricks/${name}_32x32.png`, import.meta.url);
-//         const blockImg = await Canvas.loadImage(blockImgPath.pathname);
-//         brickImgs[hex] = blockImg;
-//     }
-// })();
+//Load images of individual bricks
+(async () => {
+    // For each hex colour, load image and set as canvas image object inside brickImgs array.
+    for (const hex of HEX_COLOUR_PALETTE) {
+        const name = hex.substring(1);
+        const blockImgPath = new URL(`../../resources/bricks/${name}.png`, import.meta.url);
+        const blockImg = await Canvas.loadImage(blockImgPath.pathname);
+        brickImgs[hex] = blockImg;
+    }
+})();
 
 // Finds closest hex colour in colour palette when given RGB val
 const closestColourInPalette = (r: number, g: number, b: number): string => {
@@ -90,9 +90,9 @@ const pixelateImage = async (src: Buffer, widthBlocks: number, heightBlocks: num
             // Find closest RGB colour in palette
             const match = closestColourInPalette(rAvg, gAvg, bAvg);
 
-            //brickImageCtx.drawImage(brickImgs[match], (x / sampleSize) * 32, (y / sampleSize) * 32);
-            brickImageCtx.fillStyle = match;
-            brickImageCtx.fillRect((x / sampleSize) * 32, (y / sampleSize) * 32, 32, 32);
+            brickImageCtx.drawImage(brickImgs[match], (x / sampleSize) * 32, (y / sampleSize) * 32);
+            // brickImageCtx.fillStyle = match;
+            // brickImageCtx.fillRect((x / sampleSize) * 32, (y / sampleSize) * 32, 32, 32);
         }
     }
 
