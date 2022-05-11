@@ -64,6 +64,8 @@ const pixelateImage = async (src: Buffer, widthBlocks: number, heightBlocks: num
     const brickImageCan = Canvas.createCanvas(brickImageWidth, brickImageHeight);
     const brickImageCtx = brickImageCan.getContext('2d');
 
+    const hexToCount = new Map<string, number>();
+
     for (let y = 0; y < newHeight; y += sampleSize) {
         for (let x = 0; x < newWidth; x += sampleSize) {
             const p = (x + y * newWidth) * 4;
@@ -89,12 +91,20 @@ const pixelateImage = async (src: Buffer, widthBlocks: number, heightBlocks: num
 
             // Find closest RGB colour in palette
             const match = closestColourInPalette(rAvg, gAvg, bAvg);
+            const count = hexToCount.get(match);
+            hexToCount.set(match, count ? count : 1);
 
             brickImageCtx.drawImage(brickImgs[match], (x / sampleSize) * 32, (y / sampleSize) * 32);
             // brickImageCtx.fillStyle = match;
             // brickImageCtx.fillRect((x / sampleSize) * 32, (y / sampleSize) * 32, 32, 32);
         }
     }
+
+    hexToCount.forEach((value: number, key: string) => {
+        console.groupCollapsed("hex use");
+        console.log(key, value);
+        console.groupEnd();
+    });
 
     const output = brickImageCan.toBuffer('image/jpeg', { quality: 0.75 });
 
