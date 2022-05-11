@@ -3,7 +3,7 @@ import { JOTFORM_UPLOAD_URL, JOTFORM_USERNAME } from '../constants';
 import { processInputImage } from './image.service';
 import { pixelateImage } from './brick.service'
 //import { removeBackground } from './removebg.service';
-//import { cartoonifyImage } from './cartoonify.service';
+import { cartoonifyImage } from './cartoonify.service';
 
 const getJotFormImage = async (formId: string, subId: string, fileName: string): Promise<Buffer> => {
     console.time('jotImage');
@@ -22,7 +22,7 @@ const getJotFormImage = async (formId: string, subId: string, fileName: string):
 const makePicBrickFromJotForm = async (formId: string, subId: string, fileName: string, boardSize: string): Promise<Buffer> => {
     const originalImage = await getJotFormImage(formId, subId, fileName);
     const modifiedImage = await processInputImage(originalImage);
-    //const cartoon = await cartoonifyImage(modifiedImage);
+    const cartoon = await cartoonifyImage(modifiedImage);
     // const noBg = await removeBackground(cartoon);
 
     // Calculate Sample Size based on Physical Size
@@ -41,7 +41,7 @@ const makePicBrickFromJotForm = async (formId: string, subId: string, fileName: 
         heightBlocks = 96;
     }
 
-    return pixelateImage(modifiedImage, widthBlocks, heightBlocks);
+    return pixelateImage(cartoon, widthBlocks, heightBlocks);
 };
 
 export { getJotFormImage, makePicBrickFromJotForm };
