@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
-import { JOTFORM_UPLOAD_URL, JOTFORM_USERNAME } from '../constants';
+import { JOTFORM_LARGE_TEXT, JOTFORM_MEDIUM_TEXT, JOTFORM_SMALL_TEXT, JOTFORM_UPLOAD_URL, JOTFORM_USERNAME } from '../constants';
 import { processInputImage } from './image.service';
 import { pixelateImage } from './brick.service'
 //import { removeBackground } from './removebg.service';
@@ -30,13 +30,13 @@ const makePicBrickFromJotForm = async (formId: string, subId: string, fileName: 
     let widthBlocks = 64;
     let heightBlocks = 64;
     // Sample Size = (Res / Blocks #)
-    if (boardSize === 'Small 64x64') {
+    if (boardSize === JOTFORM_SMALL_TEXT) {
         widthBlocks = 64;
         heightBlocks = 64;
-    } else if (boardSize === 'Medium 96x64') {
+    } else if (boardSize === JOTFORM_MEDIUM_TEXT) {
         widthBlocks = 96;
         heightBlocks = 64;
-    } else if (boardSize === 'Large 96x96') {
+    } else if (boardSize === JOTFORM_LARGE_TEXT) {
         widthBlocks = 96;
         heightBlocks = 96;
     }
