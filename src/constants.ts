@@ -5,6 +5,10 @@ export const JOTFORM_USERNAME = process.env.JOTFORM_USERNAME;
 export const JOTFORM_UPLOAD_URL = 'https://www.jotform.com/uploads';
 export const JOTFORM_API_KEY = process.env.JOTFORM_API_KEY;
 
+export const JOTFORM_SMALL_TEXT = 'Small 64x64';
+export const JOTFORM_MEDIUM_TEXT = 'Medium 96x64';
+export const JOTFORM_LARGE_TEXT = 'Large 96x96';
+
 export const CARTOON_API_URL =
     'https://master-white-box-cartoonization-psi1104.endpoint.ainize.ai/predict';
 

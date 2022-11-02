@@ -17,7 +17,6 @@ export default (app: Express): void => {
             }
         } catch (error) {
             console.error(error);
-            console.error(error.stack);
             res.status(500).send('Internal server error, please try again later.');
         }
         console.groupEnd();

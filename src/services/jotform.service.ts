@@ -1,9 +1,9 @@
 import fetch from 'node-fetch';
-import { JOTFORM_UPLOAD_URL, JOTFORM_USERNAME } from '../constants';
+import { JOTFORM_LARGE_TEXT, JOTFORM_MEDIUM_TEXT, JOTFORM_SMALL_TEXT, JOTFORM_UPLOAD_URL, JOTFORM_USERNAME } from '../constants';
 import { processInputImage } from './image.service';
 import { pixelateImage } from './brick.service'
-import { removeBackground } from './removebg.service';
-import { cartoonifyImage } from './cartoonify.service';
+//import { removeBackground } from './removebg.service';
+//import { cartoonifyImage } from './cartoonify.service';
 
 const getJotFormImage = async (formId: string, subId: string, fileName: string): Promise<Buffer> => {
     console.time('jotImage');
@@ -22,26 +22,26 @@ const getJotFormImage = async (formId: string, subId: string, fileName: string):
 const makePicBrickFromJotForm = async (formId: string, subId: string, fileName: string, boardSize: string): Promise<Buffer> => {
     const originalImage = await getJotFormImage(formId, subId, fileName);
     const modifiedImage = await processInputImage(originalImage);
-    const cartoon = await cartoonifyImage(modifiedImage);
-    const noBg = await removeBackground(cartoon);
+    // const cartoon = await cartoonifyImage(modifiedImage);
+    // const noBg = await removeBackground(cartoon);
 
     // Calculate Sample Size based on Physical Size
     console.log(boardSize);
     let widthBlocks = 64;
     let heightBlocks = 64;
     // Sample Size = (Res / Blocks #)
-    if (boardSize === 'Small 64x64') {
+    if (boardSize === JOTFORM_SMALL_TEXT) {
         widthBlocks = 64;
         heightBlocks = 64;
-    } else if (boardSize === 'Medium 96x64') {
+    } else if (boardSize === JOTFORM_MEDIUM_TEXT) {
         widthBlocks = 96;
         heightBlocks = 64;
-    } else if (boardSize === 'Large 96x96') {
+    } else if (boardSize === JOTFORM_LARGE_TEXT) {
         widthBlocks = 96;
         heightBlocks = 96;
     }
 
-    return pixelateImage(noBg, widthBlocks, heightBlocks);
+    return pixelateImage(modifiedImage, widthBlocks, heightBlocks);
 };
 
 export { getJotFormImage, makePicBrickFromJotForm };
