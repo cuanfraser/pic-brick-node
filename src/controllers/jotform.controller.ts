@@ -9,8 +9,9 @@ export default (app: Express): void => {
             const subId = req.body.submission_id;
             const files = [].concat(req.body['fileupload[]']);
             const size = req.body.size;
+            console.log('request: ' + req);
             for (const fileName of files) {
-                console.log("filename: " + fileName);
+                console.log('filename: ' + fileName);
                 const image = await makePicBrickFromJotForm(formId, subId, fileName, size);
                 res.contentType('image/jpeg');
                 res.send(image);
