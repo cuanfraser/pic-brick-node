@@ -96,12 +96,12 @@ const pixelateImage = async (src: Buffer, widthBlocks: number, heightBlocks: num
         }
     }
 
+    // Count of bricks used for each Hex colour
     hexToCount.forEach((value: number, key: string) => {
-        console.groupCollapsed("hex use");
-        console.log(key, value);
-        console.groupEnd();
+        console.log("Hex " + key + " used: " + value);
     })
 
+    // New Palette excluding Hex colours with less than chosen amount
     const newPalette = HEX_COLOUR_PALETTE.filter((hex) => {
         let count = hexToCount.get(hex);
         if (count == undefined) {
@@ -112,6 +112,7 @@ const pixelateImage = async (src: Buffer, widthBlocks: number, heightBlocks: num
 
     const hexToCountAfter = new Map<string, number>();
 
+    // Build image on canvas
     for (let y = 0; y < newHeight; y += sampleSize) {
         for (let x = 0; x < newWidth; x += sampleSize) {
             const p = (x + y * newWidth) * 4;
@@ -144,10 +145,9 @@ const pixelateImage = async (src: Buffer, widthBlocks: number, heightBlocks: num
         }
     }
 
+    // Hex Usage after dropping min
     hexToCountAfter.forEach((value: number, key: string) => {
-        console.groupCollapsed("hex use after");
-        console.log(key, value);
-        console.groupEnd();
+        console.log("Final Hex " + key + " used: " + value);
     })
 
     const output = brickImageCan.toBuffer('image/jpeg', { quality: 0.75 });
