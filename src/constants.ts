@@ -12,6 +12,8 @@ export const JOTFORM_LARGE_TEXT = 'Large 96x96';
 export const CARTOON_API_URL =
     'https://master-white-box-cartoonization-psi1104.endpoint.ainize.ai/predict';
 
+export const MONGODB_URI = process.env.MONGODB_URI;
+
 export const REMOVE_BG_URL = 'https://api.remove.bg/v1.0/removebg';
 export const REMOVE_BG_API_KEY = process.env.REMOVE_BG_API_KEY;
 
