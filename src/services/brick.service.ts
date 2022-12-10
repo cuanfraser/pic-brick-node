@@ -21,9 +21,19 @@ const closestColourInPalette = (r: number, g: number, b: number, palette: string
     return matcher(`rgb(${r}, ${g}, ${b})`);
 };
 
+interface ImageWithHexCount {
+    image: Buffer,
+    hexToCountBefore: Map<string, number>,
+    hexToCountAfter: Map<string, number>
+}
+
 
 // Make image into pixelated area reped by bricks
-const pixelateImage = async (src: Buffer, widthBlocks: number, heightBlocks: number): Promise<Buffer> => {
+const makeBrickImage = async (
+    src: Buffer,
+    widthBlocks: number,
+    heightBlocks: number,
+): Promise<ImageWithHexCount> => {
     console.groupCollapsed(['Pixelate Image']);
     console.time('pixelate');
 
@@ -48,7 +58,7 @@ const pixelateImage = async (src: Buffer, widthBlocks: number, heightBlocks: num
         0,
         0,
         newWidth,
-        newHeight
+        newHeight,
     );
 
     // Get pixel array where each pixel is 4 slots (RGBA)
@@ -98,8 +108,8 @@ const pixelateImage = async (src: Buffer, widthBlocks: number, heightBlocks: num
 
     // Count of bricks used for each Hex colour
     hexToCount.forEach((value: number, key: string) => {
-        console.log("Hex " + key + " used: " + value);
-    })
+        console.log('Hex ' + key + ' used: ' + value);
+    });
 
     // New Palette excluding Hex colours with less than chosen amount
     const newPalette = HEX_COLOUR_PALETTE.filter((hex) => {
@@ -147,10 +157,16 @@ const pixelateImage = async (src: Buffer, widthBlocks: number, heightBlocks: num
 
     // Hex Usage after dropping min
     hexToCountAfter.forEach((value: number, key: string) => {
-        console.log("Final Hex " + key + " used: " + value);
-    })
+        console.log('Final Hex ' + key + ' used: ' + value);
+    });
 
-    const output = brickImageCan.toBuffer('image/jpeg', { quality: 0.75 });
+    const imageOutput = brickImageCan.toBuffer('image/jpeg', { quality: 0.75 });
+
+    const output = {
+        image: imageOutput,
+        hexToCountBefore: hexToCount,
+        hexToCountAfter: hexToCountAfter
+    };
 
     console.timeEnd('pixelate');
     console.groupEnd();
@@ -158,4 +174,4 @@ const pixelateImage = async (src: Buffer, widthBlocks: number, heightBlocks: num
     return output;
 };
 
-export { brickImgs, pixelateImage, closestColourInPalette };
+export { brickImgs, makeBrickImage, closestColourInPalette, ImageWithHexCount };

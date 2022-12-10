@@ -1,11 +1,15 @@
 import fetch from 'node-fetch';
 import { JOTFORM_LARGE_TEXT, JOTFORM_MEDIUM_TEXT, JOTFORM_SMALL_TEXT, JOTFORM_UPLOAD_URL, JOTFORM_USERNAME } from '../constants';
 import { processInputImage } from './image.service';
-import { pixelateImage } from './brick.service'
+import { makeBrickImage, ImageWithHexCount } from './brick.service'
 //import { removeBackground } from './removebg.service';
 //import { cartoonifyImage } from './cartoonify.service';
 
-const getJotFormImage = async (formId: string, subId: string, fileName: string): Promise<Buffer> => {
+const getJotFormImage = async (
+    formId: string,
+    subId: string,
+    fileName: string,
+): Promise<Buffer> => {
     console.time('jotImage');
     const imageUrl = `${JOTFORM_UPLOAD_URL}/${JOTFORM_USERNAME}/${formId}/${subId}/${fileName}`;
     const url = imageUrl;
@@ -19,7 +23,13 @@ const getJotFormImage = async (formId: string, subId: string, fileName: string):
     }
 };
 
-const makePicBrickFromJotForm = async (formId: string, subId: string, fileName: string, boardSize: string): Promise<Buffer> => {
+// Gets JotForm image and converts to PicBrick image with hex counts
+const makePicBrickFromJotForm = async (
+    formId: string,
+    subId: string,
+    fileName: string,
+    boardSize: string,
+): Promise<ImageWithHexCount> => {
     const originalImage = await getJotFormImage(formId, subId, fileName);
     const modifiedImage = await processInputImage(originalImage);
     // const cartoon = await cartoonifyImage(modifiedImage);
@@ -41,7 +51,7 @@ const makePicBrickFromJotForm = async (formId: string, subId: string, fileName: 
         heightBlocks = 96;
     }
 
-    return pixelateImage(modifiedImage, widthBlocks, heightBlocks);
+    return makeBrickImage(modifiedImage, widthBlocks, heightBlocks);
 };
 
 export { getJotFormImage, makePicBrickFromJotForm };

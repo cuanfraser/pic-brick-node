@@ -1,4 +1,5 @@
 import { Express, Request, Response } from 'express';
+import { ImageWithHexCount } from 'services/brick.service';
 import { makePicBrickFromJotForm } from '../services/jotform.service';
 
 export default (app: Express): void => {
@@ -10,9 +11,9 @@ export default (app: Express): void => {
             const firstFile = [].concat(req.body['fileupload[0]']);
             const size = req.body.size;
             for (const fileName of firstFile) {
-                const image = await makePicBrickFromJotForm(formId, subId, fileName, size);
+                const result: ImageWithHexCount = await makePicBrickFromJotForm(formId, subId, fileName, size);
                 res.contentType('image/jpeg');
-                res.send(image);
+                res.send(result.image);
                 break;
             }
         } catch (error) {
