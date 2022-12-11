@@ -1,5 +1,5 @@
 import { Express, Request, Response } from 'express';
-import { JotformSubmission } from 'models/jotform-submission/jotform-submission.model';
+import { JotformSubmission } from '../models/jotform-submission/jotform-submission.model';
 import { ImageWithHexCount } from 'services/brick.service';
 import { makePicBrickFromJotForm } from '../services/jotform.service';
 

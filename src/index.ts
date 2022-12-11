@@ -1,17 +1,17 @@
 import express from 'express';
-import jotformController from './controllers/jotform.controller.js';
+import jotformController from './controllers/jotform.controller';
 import mongoose from 'mongoose';
-import { MONGODB_URI } from 'constants.js';
+import { MONGODB_URI } from './constants';
 const app = express();
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || 8555;
 
 const main = async () => {
 
-    if (!MONGODB_URI) {
-        return -1;
+    let dbConnectionString = 'mongodb://localhost:27017/pic-brick';
+    if (MONGODB_URI) {
+        dbConnectionString = MONGODB_URI;
     }
-
-    await mongoose.connect(MONGODB_URI);
+    await mongoose.connect(dbConnectionString);
 
     app.use(function (req, res, next) {
         res.header('Access-Control-Allow-Origin', '*');
