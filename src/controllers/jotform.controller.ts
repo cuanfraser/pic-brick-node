@@ -42,10 +42,10 @@ export default (app: Express): void => {
                 await JotformSubmission.findByIdAndUpdate(submission._id, { $push: { mosaics: mosaic }});
 
                 const writtenFileName = `file${fileCount}.jpeg`;
-                await writeFile(`${__dirname}/${writtenFileName}`, result.image);
+                await writeFile(writtenFileName, result.image);
 
                 res.contentType('image/jpeg');
-                res.sendFile(writtenFileName, { root: __dirname });
+                res.download(writtenFileName);
                 //res.send(result.image);
                 fileCount++;
                 // TODO: REMOVE
