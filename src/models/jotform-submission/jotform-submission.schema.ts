@@ -1,4 +1,4 @@
-import { Schema } from 'mongoose';
+import { Schema, Types } from 'mongoose';
 
 export interface IJotformSubmission {
     submissionId: number;
@@ -7,6 +7,7 @@ export interface IJotformSubmission {
     email: string;
     size: string;
     imageNames: [string];
+    mosaics: [Types.ObjectId];
 }
 
 const jotformSubmissionSchema = new Schema<IJotformSubmission>({
@@ -16,6 +17,7 @@ const jotformSubmissionSchema = new Schema<IJotformSubmission>({
     email: String,
     size: String,
     imageNames: [String],
+    mosaics: { type: [Schema.Types.ObjectId], ref: 'Mosaic'}
 });
 
 export { jotformSubmissionSchema };

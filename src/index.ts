@@ -11,6 +11,7 @@ const main = async () => {
     if (MONGODB_URI) {
         dbConnectionString = MONGODB_URI;
     }
+    console.log('DB Connection String: ' + dbConnectionString);
     await mongoose.connect(dbConnectionString);
 
     app.use(function (req, res, next) {
