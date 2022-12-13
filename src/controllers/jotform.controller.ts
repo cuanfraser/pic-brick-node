@@ -46,7 +46,7 @@ export default (app: Express): void => {
 
                 res.contentType('image/jpeg');
                 res.download(writtenFileName);
-                //res.send(result.image);
+                res.redirect('https://www.pic-brick.com/order')
                 fileCount++;
                 // TODO: REMOVE
                 break;
