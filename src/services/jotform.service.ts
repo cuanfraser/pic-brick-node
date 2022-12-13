@@ -56,7 +56,7 @@ const makePicBrickFromJotForm = async (
 
     const imageWithHex = await makeBrickImage(modifiedImage, widthBlocks, heightBlocks);
 
-    const mosaic = new Mosaic({ size: boardSize, originalImageName: fileName, buffer: imageWithHex.image });
+    const mosaic = new Mosaic({ size: boardSize, originalImageName: fileName, buffer: imageWithHex.image, hexToCountMap: imageWithHex.hexToCountAfter });
     await mosaic.save();
     await JotformSubmission.findByIdAndUpdate(jotformSubmission._id, { $push: { mosaics: mosaic }});
 
