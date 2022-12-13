@@ -14,8 +14,8 @@ describe('JotForm', () => {
 
     test('JotForm Retrieve Image w/ Service', async () => {
         const formId = '211827483647060';
-        const subId = '5012321919365964060';
-        const fileName = 'Logan_Rock_Treen_closeup.jpg';
+        const subId = '5466061546021721652';
+        const fileName = 'WhatsApp Image 2022-11-03 at 18.03.08.jpg';
 
         const img = await getJotFormImage(formId, subId, fileName);
         expect(img).toBeDefined();
