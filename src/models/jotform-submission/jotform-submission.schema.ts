@@ -10,14 +10,17 @@ export interface IJotformSubmission {
     mosaics: [Types.ObjectId];
 }
 
-const jotformSubmissionSchema = new Schema<IJotformSubmission>({
-    submissionId: Number,
-    formId: Number,
-    ip: String,
-    email: String,
-    size: String,
-    imageNames: [String],
-    mosaics: { type: [Schema.Types.ObjectId], ref: 'Mosaic'}
-});
+const jotformSubmissionSchema = new Schema<IJotformSubmission>(
+    {
+        submissionId: Number,
+        formId: Number,
+        ip: String,
+        email: String,
+        size: String,
+        imageNames: [String],
+        mosaics: { type: [Schema.Types.ObjectId], ref: 'Mosaic' },
+    },
+    { collection: 'jotform-submissions' },
+);
 
 export { jotformSubmissionSchema };
