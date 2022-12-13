@@ -1,8 +1,9 @@
 import { Schema, Types } from 'mongoose';
 
 export interface IJotformSubmission {
-    submissionId: number;
-    formId: number;
+    _id: Types.ObjectId;
+    submissionId: string;
+    formId: string;
     ip: string;
     email: string;
     size: string;
@@ -12,8 +13,8 @@ export interface IJotformSubmission {
 
 const jotformSubmissionSchema = new Schema<IJotformSubmission>(
     {
-        submissionId: Number,
-        formId: Number,
+        submissionId: String,
+        formId: String,
         ip: String,
         email: String,
         size: String,

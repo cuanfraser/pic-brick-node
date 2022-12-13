@@ -2,9 +2,7 @@ import { Express, Request, Response } from 'express';
 import { JotformSubmission } from '../models/jotform-submission/jotform-submission.model';
 import { ImageWithHexCount } from '../services/brick.service';
 import { makePicBrickFromJotForm } from '../services/jotform.service';
-import { Mosaic } from '../models/mosaic/mosaic.model';
 import { writeFile } from 'node:fs/promises';
-import { __dirname } from '../constants';
 
 export default (app: Express): void => {
     app.post('/api/jotform', async (req: Request, res: Response) => {
@@ -36,10 +34,7 @@ export default (app: Express): void => {
 
             let fileCount = 0;
             for (const fileName of fileNames) {
-                const result: ImageWithHexCount = await makePicBrickFromJotForm(formId, subId, fileName, size);
-                const mosaic = new Mosaic({ size: size, originalImageName: fileName, buffer: result.image });
-                await mosaic.save();
-                await JotformSubmission.findByIdAndUpdate(submission._id, { $push: { mosaics: mosaic }});
+                const result: ImageWithHexCount = await makePicBrickFromJotForm(submission, fileName);
 
                 const writtenFileName = `file${fileCount}.jpeg`;
                 await writeFile(writtenFileName, result.image);
