@@ -3,7 +3,7 @@ import { writeFile } from 'node:fs/promises';
 import { getHexCountCsv } from '../services/hex-count.service.js';
 
 export default (app: Express): void => {
-    app.post('/api/hex-count', async (req: Request, res: Response) => {
+    app.get('/api/hex-count', async (req: Request, res: Response) => {
         console.groupCollapsed(['/api/hex-count request']);
         try {
             
