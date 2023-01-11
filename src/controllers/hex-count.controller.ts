@@ -8,7 +8,7 @@ export default (app: Express): void => {
         try {
             
             const csvString = await getHexCountCsv();
-            const fileName = 'totalHexCount.csv';
+            const fileName = '/totalHexCount.csv';
             await writeFile(fileName, csvString);
             res.sendFile(fileName);
 
