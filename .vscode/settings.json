@@ -3,5 +3,6 @@
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": true
     },
-    "typescript.preferences.importModuleSpecifierEnding": "js"
+    "typescript.preferences.importModuleSpecifierEnding": "js",
+    "typescript.preferences.importModuleSpecifier": "relative"
 }
