@@ -2,6 +2,7 @@ import express from 'express';
 import jotformController from './controllers/jotform.controller.js';
 import mongoose from 'mongoose';
 import { MONGODB_URI } from './constants.js';
+import hexCountController from './controllers/hex-count.controller.js';
 const app = express();
 const port = process.env.PORT || 8555;
 
@@ -27,6 +28,7 @@ const main = async () => {
     app.use(express.json());
 
     jotformController(app);
+    hexCountController(app);
     app.listen(port, () => console.log('Listening on port ' + port));
 }
 
