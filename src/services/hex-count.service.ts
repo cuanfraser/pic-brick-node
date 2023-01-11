@@ -14,12 +14,13 @@ export const getHexCountCsv = async (): Promise<string> => {
         }
     }
 
-    const header = 'hex,total,imgs_used'
+    const header = 'hex,total,imgs_used,imgs_unused'
     let csvString = header + '\n';
 
     for (const [hex, counts] of hexTotals) {
         const total = counts.reduce((prev, current) => prev + current);
-        const row = `${hex},${total},${counts.length}\n`;
+        const imgs_unused = mosaics.length - counts.length;
+        const row = `${hex},${total},${counts.length},${imgs_unused}\n`;
         csvString += row;
     }
 
