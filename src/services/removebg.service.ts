@@ -1,4 +1,4 @@
-import { HEX_BACKGROUND_COLOUR, REMOVE_BG_API_KEY, REMOVE_BG_URL } from '../constants';
+import { HEX_BACKGROUND_COLOUR, REMOVE_BG_API_KEY, REMOVE_BG_URL } from '../constants.js';
 import fetch, { Response } from 'node-fetch';
 import FormData from 'form-data';
 

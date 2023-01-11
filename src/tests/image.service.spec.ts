@@ -1,4 +1,4 @@
-import { cropImageToBoardSize } from '../services/image.service';
+import { cropImageToBoardSize } from '../services/image.service.js';
 
 describe('cropImageToBoardSize Tests', () => {
     test('No crop on perfect square with no mod', () => {

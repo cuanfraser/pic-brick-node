@@ -1,7 +1,7 @@
 import express from 'express';
-import jotformController from './controllers/jotform.controller';
+import jotformController from './controllers/jotform.controller.js';
 import mongoose from 'mongoose';
-import { MONGODB_URI } from './constants';
+import { MONGODB_URI } from './constants.js';
 const app = express();
 const port = process.env.PORT || 8555;
 

@@ -1,7 +1,5 @@
 import fetch from 'node-fetch';
-import {
-    getJotFormImage
-} from '../services/jotform.service';
+import { getJotFormImage } from '../services/jotform.service.js';
 
 describe('JotForm', () => {
     test('JotForm Sample Image URL Active', async () => {

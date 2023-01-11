@@ -1,6 +1,6 @@
 import Canvas from 'canvas';
-import { HEX_COLOUR_PALETTE } from '../constants';
-import { cropImageToBoardSize } from './image.service';
+import { HEX_COLOUR_PALETTE } from '../constants.js';
+import { cropImageToBoardSize } from './image.service.js';
 import nearestColour from 'nearest-color';
 
 const brickImgs: { [key: string]: Canvas.Image; } = {};
