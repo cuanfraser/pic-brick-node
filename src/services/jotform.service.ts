@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
-import { JOTFORM_LARGE_TEXT, JOTFORM_MEDIUM_TEXT, JOTFORM_SMALL_TEXT, JOTFORM_UPLOAD_URL, JOTFORM_USERNAME } from '../constants.js';
+import { JOTFORM_API_KEY, JOTFORM_LARGE_TEXT, JOTFORM_MEDIUM_TEXT, JOTFORM_SMALL_TEXT, JOTFORM_UPLOAD_URL, JOTFORM_USERNAME } from '../constants.js';
 import { processInputImage } from './image.service.js';
 import { makeBrickImage, ImageWithHexCount } from './brick.service.js'
 import { IJotformSubmission } from '../models/jotform-submission/jotform-submission.schema.js';
@@ -14,7 +14,7 @@ const getJotFormImage = async (
     fileName: string,
 ): Promise<Buffer> => {
     console.time('jotImage');
-    const imageUrl = `${JOTFORM_UPLOAD_URL}/${JOTFORM_USERNAME}/${formId}/${subId}/${encodeURIComponent(fileName)}`;
+    const imageUrl = `${JOTFORM_UPLOAD_URL}/${JOTFORM_USERNAME}/${formId}/${subId}/${encodeURIComponent(fileName)}?apiKey=${JOTFORM_API_KEY}`;
     console.log('JotForm Image Retrieval URL: ' + imageUrl);
     const resp = await fetch(imageUrl);
     if (resp.ok) {
