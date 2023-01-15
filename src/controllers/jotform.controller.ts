@@ -1,7 +1,7 @@
 import { Express, Request, Response } from 'express';
-import { JotformSubmission } from '../models/jotform-submission/jotform-submission.model';
-import { ImageWithHexCount } from '../services/brick.service';
-import { makePicBrickFromJotForm } from '../services/jotform.service';
+import { JotformSubmission } from '../models/jotform-submission/jotform-submission.model.js';
+import { ImageWithHexCount } from '../services/brick.service.js';
+import { makePicBrickFromJotForm } from '../services/jotform.service.js';
 import { writeFile } from 'node:fs/promises';
 
 export default (app: Express): void => {

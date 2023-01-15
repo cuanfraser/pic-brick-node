@@ -1,0 +1,21 @@
+import { Express, Request, Response } from 'express';
+import { writeFile } from 'node:fs/promises';
+import { getHexCountCsv } from '../services/hex-count.service.js';
+
+export default (app: Express): void => {
+    app.get('/api/hex-count', async (req: Request, res: Response) => {
+        console.groupCollapsed(['/api/hex-count request']);
+        try {
+            
+            const csvString = await getHexCountCsv();
+            const fileName = 'totalHexCount.csv';
+            await writeFile(fileName, csvString);
+            res.download(fileName);
+
+        } catch (error) {
+            console.error(error);
+            res.status(500).send('Internal server error, please try again later.');
+        }
+        console.groupEnd();
+    });
+};

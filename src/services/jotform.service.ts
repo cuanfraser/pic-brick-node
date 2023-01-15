@@ -1,10 +1,10 @@
 import fetch from 'node-fetch';
-import { JOTFORM_LARGE_TEXT, JOTFORM_MEDIUM_TEXT, JOTFORM_SMALL_TEXT, JOTFORM_UPLOAD_URL, JOTFORM_USERNAME } from '../constants';
-import { processInputImage } from './image.service';
-import { makeBrickImage, ImageWithHexCount } from './brick.service'
-import { IJotformSubmission } from '../models/jotform-submission/jotform-submission.schema';
-import { JotformSubmission } from '../models/jotform-submission/jotform-submission.model';
-import { Mosaic } from '../models/mosaic/mosaic.model';
+import { JOTFORM_LARGE_TEXT, JOTFORM_MEDIUM_TEXT, JOTFORM_SMALL_TEXT, JOTFORM_UPLOAD_URL, JOTFORM_USERNAME } from '../constants.js';
+import { processInputImage } from './image.service.js';
+import { makeBrickImage, ImageWithHexCount } from './brick.service.js'
+import { IJotformSubmission } from '../models/jotform-submission/jotform-submission.schema.js';
+import { JotformSubmission } from '../models/jotform-submission/jotform-submission.model.js';
+import { Mosaic } from '../models/mosaic/mosaic.model.js';
 //import { removeBackground } from './removebg.service';
 //import { cartoonifyImage } from './cartoonify.service';
 
