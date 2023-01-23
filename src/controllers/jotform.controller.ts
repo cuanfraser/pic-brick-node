@@ -34,10 +34,10 @@ export default (app: Express): void => {
 
             let fileCount = 0;
             for (const fileName of fileNames) {
-                const result: ImageWithHexCount = await makePicBrickFromJotForm(submission, fileName);
+                const result = await makePicBrickFromJotForm(submission, fileName);
 
                 const writtenFileName = `file${fileCount}.jpeg`;
-                await writeFile(writtenFileName, result.image);
+                await writeFile(writtenFileName, result);
 
                 res.contentType('image/jpeg');
                 res.download(writtenFileName);

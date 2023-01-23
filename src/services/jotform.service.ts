@@ -29,7 +29,7 @@ const getJotFormImage = async (
 const makePicBrickFromJotForm = async (
     jotformSubmission: IJotformSubmission,
     fileName: string,
-): Promise<ImageWithHexCount> => {
+): Promise<Buffer> => {
     const formId = jotformSubmission.formId;
     const subId = jotformSubmission.submissionId;
     const boardSize = jotformSubmission.size;
@@ -60,7 +60,7 @@ const makePicBrickFromJotForm = async (
     await mosaic.save();
     await JotformSubmission.findByIdAndUpdate(jotformSubmission._id, { $push: { mosaics: mosaic }});
 
-    return imageWithHex;
+    return imageWithHex.image;
 };
 
 export { getJotFormImage, makePicBrickFromJotForm };
