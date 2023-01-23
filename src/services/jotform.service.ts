@@ -17,8 +17,8 @@ const getJotFormImage = async (
     const imageUrl = `${JOTFORM_UPLOAD_URL}/${JOTFORM_USERNAME}/${formId}/${subId}/${encodeURIComponent(fileName)}?apiKey=${JOTFORM_API_KEY}`;
     console.log('JotForm Image Retrieval URL: ' + imageUrl);
     const resp = await fetch(imageUrl);
+    console.timeEnd('jotImage');
     if (resp.ok) {
-        console.timeEnd('jotImage');
         return resp.buffer();
     } else {
         throw new Error(`Failed retrieving image (${fileName}) from JotForm with response: "${resp.status}: ${resp.statusText}"`);
