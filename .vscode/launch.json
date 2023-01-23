@@ -1,15 +1,12 @@
 {
     "version": "0.2.0",
     "configurations": [
-        
         {
-            "type": "pwa-node",
+            "type": "node-terminal",
+            "name": "Run Script: start",
             "request": "launch",
-            "name": "Launch Program",
-            "skipFiles": [
-                "<node_internals>/**"
-            ],
-            "program": "${workspaceFolder}/dist/index.js"
+            "command": "npm run start",
+            "cwd": "${workspaceFolder}"
         }
     ]
 }
