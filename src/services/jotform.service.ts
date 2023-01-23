@@ -1,14 +1,14 @@
 import fetch from 'node-fetch';
 import { JOTFORM_API_KEY, JOTFORM_LARGE_TEXT, JOTFORM_MEDIUM_TEXT, JOTFORM_SMALL_TEXT, JOTFORM_UPLOAD_URL, JOTFORM_USERNAME } from '../constants.js';
 import { processInputImage } from './image.service.js';
-import { makeBrickImage, ImageWithHexCount } from './brick.service.js'
+import { makeMosaic } from './mosaic.service.js'
 import { IJotformSubmission } from '../models/jotform-submission/jotform-submission.schema.js';
 import { JotformSubmission } from '../models/jotform-submission/jotform-submission.model.js';
 import { Mosaic } from '../models/mosaic/mosaic.model.js';
 //import { removeBackground } from './removebg.service';
 //import { cartoonifyImage } from './cartoonify.service';
 
-const getJotFormImage = async (
+export const getJotFormImage = async (
     formId: string,
     subId: string,
     fileName: string,
@@ -17,8 +17,8 @@ const getJotFormImage = async (
     const imageUrl = `${JOTFORM_UPLOAD_URL}/${JOTFORM_USERNAME}/${formId}/${subId}/${encodeURIComponent(fileName)}?apiKey=${JOTFORM_API_KEY}`;
     console.log('JotForm Image Retrieval URL: ' + imageUrl);
     const resp = await fetch(imageUrl);
+    console.timeEnd('jotImage');
     if (resp.ok) {
-        console.timeEnd('jotImage');
         return resp.buffer();
     } else {
         throw new Error(`Failed retrieving image (${fileName}) from JotForm with response: "${resp.status}: ${resp.statusText}"`);
@@ -26,10 +26,10 @@ const getJotFormImage = async (
 };
 
 // Gets JotForm image and converts to PicBrick image with hex counts
-const makePicBrickFromJotForm = async (
+export const makeMosaicFromJotForm = async (
     jotformSubmission: IJotformSubmission,
     fileName: string,
-): Promise<ImageWithHexCount> => {
+): Promise<Buffer> => {
     const formId = jotformSubmission.formId;
     const subId = jotformSubmission.submissionId;
     const boardSize = jotformSubmission.size;
@@ -54,13 +54,11 @@ const makePicBrickFromJotForm = async (
         heightBlocks = 96;
     }
 
-    const imageWithHex = await makeBrickImage(modifiedImage, widthBlocks, heightBlocks);
+    const mosaicInfo = await makeMosaic(modifiedImage, widthBlocks, heightBlocks);
 
-    const mosaic = new Mosaic({ size: boardSize, originalImageName: fileName, buffer: imageWithHex.image, hexToCountMap: imageWithHex.hexToCountAfter });
+    const mosaic = new Mosaic({ size: boardSize, originalImageName: fileName, buffer: mosaicInfo.image, hexToCountMap: mosaicInfo.hexToCountAfter, instructions: mosaicInfo.instructions, sampleSize: mosaicInfo.sampleSize });
     await mosaic.save();
     await JotformSubmission.findByIdAndUpdate(jotformSubmission._id, { $push: { mosaics: mosaic }});
 
-    return imageWithHex;
+    return mosaicInfo.image;
 };
-
-export { getJotFormImage, makePicBrickFromJotForm };

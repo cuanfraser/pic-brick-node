@@ -1,9 +1,9 @@
 import Canvas from 'canvas';
-import { HEX_COLOUR_PALETTE } from '../constants.js';
+import { HEX_COLOUR_PALETTE, MIN_HEX_COUNT } from '../constants.js';
 import { cropImageToBoardSize } from './image.service.js';
 import nearestColour from 'nearest-color';
 
-const brickImgs: { [key: string]: Canvas.Image; } = {};
+export const brickImgs: { [key: string]: Canvas.Image; } = {};
 //Load images of individual bricks
 (async () => {
     // For each hex colour, load image and set as canvas image object inside brickImgs array.
@@ -16,26 +16,28 @@ const brickImgs: { [key: string]: Canvas.Image; } = {};
 })();
 
 // Finds closest hex colour in colour palette when given RGB val
-const closestColourInPalette = (r: number, g: number, b: number, palette: string[]): string => {
+export const closestColourInPalette = (r: number, g: number, b: number, palette: string[]): string => {
     const matcher = nearestColour.from(palette);
     return matcher(`rgb(${r}, ${g}, ${b})`);
 };
 
-interface ImageWithHexCount {
+export interface MosaicInfo {
     image: Buffer,
     hexToCountBefore: Map<string, number>,
-    hexToCountAfter: Map<string, number>
+    hexToCountAfter: Map<string, number>,
+    instructions: string[][],
+    sampleSize: number
 }
 
 
 // Make image into pixelated area reped by bricks
-const makeBrickImage = async (
+export const makeMosaic = async (
     src: Buffer,
     widthBlocks: number,
     heightBlocks: number,
-): Promise<ImageWithHexCount> => {
-    console.groupCollapsed(['Pixelate Image']);
-    console.time('pixelate');
+): Promise<MosaicInfo> => {
+    console.groupCollapsed(['makeMosaic']);
+    console.time('makeMosaic');
 
     const img = await Canvas.loadImage(src);
 
@@ -65,12 +67,10 @@ const makeBrickImage = async (
     const pixelArr = ctx.getImageData(0, 0, newWidth, newHeight).data;
 
     const sampleSize = newWidth / widthBlocks;
-    console.log('Sample Size: ' + sampleSize);
 
     //Brick image
     const brickImageWidth = widthBlocks * 32;
     const brickImageHeight = heightBlocks * 32;
-    console.log(`brickImageWidth: ${brickImageWidth} brickImageHeight: ${brickImageHeight}`);
     const brickImageCan = Canvas.createCanvas(brickImageWidth, brickImageHeight);
     const brickImageCtx = brickImageCan.getContext('2d');
 
@@ -106,24 +106,21 @@ const makeBrickImage = async (
         }
     }
 
-    // Count of bricks used for each Hex colour
-    hexToCount.forEach((value: number, key: string) => {
-        console.log('Hex ' + key + ' used: ' + value);
-    });
-
     // New Palette excluding Hex colours with less than chosen amount
     const newPalette = HEX_COLOUR_PALETTE.filter((hex) => {
         let count = hexToCount.get(hex);
         if (count == undefined) {
             count = 0;
         }
-        return count > 5;
+        return count > MIN_HEX_COUNT;
     });
 
     const hexToCountAfter = new Map<string, number>();
+    const instructions = new Array<Array<string>>(newHeight / sampleSize);
 
     // Build image on canvas
     for (let y = 0; y < newHeight; y += sampleSize) {
+        const instructionsRow = new Array<string>(newWidth / sampleSize);
         for (let x = 0; x < newWidth; x += sampleSize) {
             const p = (x + y * newWidth) * 4;
 
@@ -150,22 +147,21 @@ const makeBrickImage = async (
             const match = closestColourInPalette(rAvg, gAvg, bAvg, newPalette);
             const count = hexToCountAfter.get(match);
             hexToCountAfter.set(match, count ? count + 1 : 1);
+            instructionsRow[x / sampleSize] = match;
 
             brickImageCtx.drawImage(brickImgs[match], (x / sampleSize) * 32, (y / sampleSize) * 32);
         }
+        instructions[y / sampleSize] = instructionsRow;
     }
-
-    // Hex Usage after dropping min
-    hexToCountAfter.forEach((value: number, key: string) => {
-        console.log('Final Hex ' + key + ' used: ' + value);
-    });
 
     const imageOutput = brickImageCan.toBuffer('image/jpeg', { quality: 0.75 });
 
     const output = {
         image: imageOutput,
         hexToCountBefore: hexToCount,
-        hexToCountAfter: hexToCountAfter
+        hexToCountAfter: hexToCountAfter,
+        instructions: instructions,
+        sampleSize: sampleSize
     };
 
     console.timeEnd('pixelate');
@@ -173,5 +169,3 @@ const makeBrickImage = async (
 
     return output;
 };
-
-export { brickImgs, makeBrickImage, closestColourInPalette, ImageWithHexCount };

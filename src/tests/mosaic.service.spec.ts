@@ -1,5 +1,5 @@
 import { HEX_COLOUR_PALETTE } from '../constants.js';
-import { closestColourInPalette } from '../services/brick.service.js';
+import { closestColourInPalette } from '../services/mosaic.service.js';
 
 describe('closestColourInPalette Tests', () => {
     test('Chooses correct colour if given exact match', () => {

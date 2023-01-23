@@ -1,7 +1,6 @@
 import { Express, Request, Response } from 'express';
 import { JotformSubmission } from '../models/jotform-submission/jotform-submission.model.js';
-import { ImageWithHexCount } from '../services/brick.service.js';
-import { makePicBrickFromJotForm } from '../services/jotform.service.js';
+import { makeMosaicFromJotForm } from '../services/jotform.service.js';
 import { writeFile } from 'node:fs/promises';
 
 export default (app: Express): void => {
@@ -34,10 +33,10 @@ export default (app: Express): void => {
 
             let fileCount = 0;
             for (const fileName of fileNames) {
-                const result: ImageWithHexCount = await makePicBrickFromJotForm(submission, fileName);
+                const result = await makeMosaicFromJotForm(submission, fileName);
 
                 const writtenFileName = `file${fileCount}.jpeg`;
-                await writeFile(writtenFileName, result.image);
+                await writeFile(writtenFileName, result);
 
                 res.contentType('image/jpeg');
                 res.download(writtenFileName);
