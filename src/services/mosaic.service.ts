@@ -3,7 +3,7 @@ import { HEX_COLOUR_PALETTE } from '../constants.js';
 import { cropImageToBoardSize } from './image.service.js';
 import nearestColour from 'nearest-color';
 
-const brickImgs: { [key: string]: Canvas.Image; } = {};
+export const brickImgs: { [key: string]: Canvas.Image; } = {};
 //Load images of individual bricks
 (async () => {
     // For each hex colour, load image and set as canvas image object inside brickImgs array.
@@ -16,12 +16,12 @@ const brickImgs: { [key: string]: Canvas.Image; } = {};
 })();
 
 // Finds closest hex colour in colour palette when given RGB val
-const closestColourInPalette = (r: number, g: number, b: number, palette: string[]): string => {
+export const closestColourInPalette = (r: number, g: number, b: number, palette: string[]): string => {
     const matcher = nearestColour.from(palette);
     return matcher(`rgb(${r}, ${g}, ${b})`);
 };
 
-interface ImageWithHexCount {
+export interface ImageWithHexCount {
     image: Buffer,
     hexToCountBefore: Map<string, number>,
     hexToCountAfter: Map<string, number>,
@@ -30,13 +30,13 @@ interface ImageWithHexCount {
 
 
 // Make image into pixelated area reped by bricks
-const makeBrickImage = async (
+export const makeMosaic = async (
     src: Buffer,
     widthBlocks: number,
     heightBlocks: number,
 ): Promise<ImageWithHexCount> => {
-    console.groupCollapsed(['Pixelate Image']);
-    console.time('pixelate');
+    console.groupCollapsed(['makeMosaic']);
+    console.time('makeMosaic');
 
     const img = await Canvas.loadImage(src);
 
@@ -179,5 +179,3 @@ const makeBrickImage = async (
 
     return output;
 };
-
-export { brickImgs, makeBrickImage, closestColourInPalette, ImageWithHexCount };
