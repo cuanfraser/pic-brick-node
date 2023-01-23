@@ -1,5 +1,5 @@
 import Canvas from 'canvas';
-import { HEX_COLOUR_PALETTE } from '../constants.js';
+import { HEX_COLOUR_PALETTE, MIN_HEX_COUNT } from '../constants.js';
 import { cropImageToBoardSize } from './image.service.js';
 import nearestColour from 'nearest-color';
 
@@ -70,7 +70,6 @@ export const makeMosaic = async (
     //Brick image
     const brickImageWidth = widthBlocks * 32;
     const brickImageHeight = heightBlocks * 32;
-    console.log(`brickImageWidth: ${brickImageWidth} brickImageHeight: ${brickImageHeight}`);
     const brickImageCan = Canvas.createCanvas(brickImageWidth, brickImageHeight);
     const brickImageCtx = brickImageCan.getContext('2d');
 
@@ -112,7 +111,7 @@ export const makeMosaic = async (
         if (count == undefined) {
             count = 0;
         }
-        return count > 5;
+        return count > MIN_HEX_COUNT;
     });
 
     const hexToCountAfter = new Map<string, number>();

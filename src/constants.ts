@@ -27,6 +27,7 @@ export const REMOVE_BG_URL = 'https://api.remove.bg/v1.0/removebg';
 export const REMOVE_BG_API_KEY = process.env.REMOVE_BG_API_KEY;
 
 export const HEX_BACKGROUND_COLOUR = '#8D9BCA';
+export const MIN_HEX_COUNT = 5;
 
 export const HEX_COLOUR_PALETTE = [
     '#E58E93',
