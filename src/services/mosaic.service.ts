@@ -21,11 +21,12 @@ export const closestColourInPalette = (r: number, g: number, b: number, palette:
     return matcher(`rgb(${r}, ${g}, ${b})`);
 };
 
-export interface ImageWithHexCount {
+export interface MosaicInfo {
     image: Buffer,
     hexToCountBefore: Map<string, number>,
     hexToCountAfter: Map<string, number>,
-    instructions: string[][]
+    instructions: string[][],
+    sampleSize: number
 }
 
 
@@ -34,7 +35,7 @@ export const makeMosaic = async (
     src: Buffer,
     widthBlocks: number,
     heightBlocks: number,
-): Promise<ImageWithHexCount> => {
+): Promise<MosaicInfo> => {
     console.groupCollapsed(['makeMosaic']);
     console.time('makeMosaic');
 
@@ -159,7 +160,8 @@ export const makeMosaic = async (
         image: imageOutput,
         hexToCountBefore: hexToCount,
         hexToCountAfter: hexToCountAfter,
-        instructions: instructions
+        instructions: instructions,
+        sampleSize: sampleSize
     };
 
     console.timeEnd('pixelate');

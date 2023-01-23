@@ -6,6 +6,7 @@ export interface IMosaic {
     buffer: Buffer;
     hexToCountMap: Map<string, number>;
     instructions: string[][];
+    sampleSize: number;
 }
 
 const mosaicSchema = new Schema<IMosaic>({
@@ -13,7 +14,8 @@ const mosaicSchema = new Schema<IMosaic>({
     originalImageName: String,
     buffer: { type: Buffer, required: true },
     hexToCountMap: { type: Map, of: Number },
-    instructions: [[String]]
+    instructions: [[String]],
+    sampleSize: Number
 });
 
 export { mosaicSchema };

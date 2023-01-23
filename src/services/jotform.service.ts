@@ -8,7 +8,7 @@ import { Mosaic } from '../models/mosaic/mosaic.model.js';
 //import { removeBackground } from './removebg.service';
 //import { cartoonifyImage } from './cartoonify.service';
 
-const getJotFormImage = async (
+export const getJotFormImage = async (
     formId: string,
     subId: string,
     fileName: string,
@@ -26,7 +26,7 @@ const getJotFormImage = async (
 };
 
 // Gets JotForm image and converts to PicBrick image with hex counts
-const makePicBrickFromJotForm = async (
+export const makeMosaicFromJotForm = async (
     jotformSubmission: IJotformSubmission,
     fileName: string,
 ): Promise<Buffer> => {
@@ -54,13 +54,11 @@ const makePicBrickFromJotForm = async (
         heightBlocks = 96;
     }
 
-    const imageWithHex = await makeMosaic(modifiedImage, widthBlocks, heightBlocks);
+    const mosaicInfo = await makeMosaic(modifiedImage, widthBlocks, heightBlocks);
 
-    const mosaic = new Mosaic({ size: boardSize, originalImageName: fileName, buffer: imageWithHex.image, hexToCountMap: imageWithHex.hexToCountAfter, instructions: imageWithHex.instructions });
+    const mosaic = new Mosaic({ size: boardSize, originalImageName: fileName, buffer: mosaicInfo.image, hexToCountMap: mosaicInfo.hexToCountAfter, instructions: mosaicInfo.instructions, sampleSize: mosaicInfo.sampleSize });
     await mosaic.save();
     await JotformSubmission.findByIdAndUpdate(jotformSubmission._id, { $push: { mosaics: mosaic }});
 
-    return imageWithHex.image;
+    return mosaicInfo.image;
 };
-
-export { getJotFormImage, makePicBrickFromJotForm };
