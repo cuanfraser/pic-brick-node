@@ -5,13 +5,15 @@ export interface IMosaic {
     originalImageName: string;
     buffer: Buffer;
     hexToCountMap: Map<string, number>;
+    instructions: string[][];
 }
 
 const mosaicSchema = new Schema<IMosaic>({
     size: String,
     originalImageName: String,
     buffer: { type: Buffer, required: true },
-    hexToCountMap: { type: Map, of: Number }
+    hexToCountMap: { type: Map, of: Number },
+    instructions: [[String]]
 });
 
 export { mosaicSchema };

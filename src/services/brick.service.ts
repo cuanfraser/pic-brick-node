@@ -24,7 +24,8 @@ const closestColourInPalette = (r: number, g: number, b: number, palette: string
 interface ImageWithHexCount {
     image: Buffer,
     hexToCountBefore: Map<string, number>,
-    hexToCountAfter: Map<string, number>
+    hexToCountAfter: Map<string, number>,
+    instructions: string[][]
 }
 
 
@@ -121,9 +122,11 @@ const makeBrickImage = async (
     });
 
     const hexToCountAfter = new Map<string, number>();
+    const instructions = new Array<Array<string>>(newHeight / sampleSize);
 
     // Build image on canvas
     for (let y = 0; y < newHeight; y += sampleSize) {
+        const instructionsRow = new Array<string>(newWidth / sampleSize);
         for (let x = 0; x < newWidth; x += sampleSize) {
             const p = (x + y * newWidth) * 4;
 
@@ -150,9 +153,11 @@ const makeBrickImage = async (
             const match = closestColourInPalette(rAvg, gAvg, bAvg, newPalette);
             const count = hexToCountAfter.get(match);
             hexToCountAfter.set(match, count ? count + 1 : 1);
+            instructionsRow[x / sampleSize] = match;
 
             brickImageCtx.drawImage(brickImgs[match], (x / sampleSize) * 32, (y / sampleSize) * 32);
         }
+        instructions[y / sampleSize] = instructionsRow;
     }
 
     // Hex Usage after dropping min
@@ -165,7 +170,8 @@ const makeBrickImage = async (
     const output = {
         image: imageOutput,
         hexToCountBefore: hexToCount,
-        hexToCountAfter: hexToCountAfter
+        hexToCountAfter: hexToCountAfter,
+        instructions: instructions
     };
 
     console.timeEnd('pixelate');
