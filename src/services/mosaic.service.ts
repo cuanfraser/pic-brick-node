@@ -66,7 +66,6 @@ export const makeMosaic = async (
     const pixelArr = ctx.getImageData(0, 0, newWidth, newHeight).data;
 
     const sampleSize = newWidth / widthBlocks;
-    console.log('Sample Size: ' + sampleSize);
 
     //Brick image
     const brickImageWidth = widthBlocks * 32;
@@ -106,11 +105,6 @@ export const makeMosaic = async (
             hexToCount.set(match, count ? count + 1 : 1);
         }
     }
-
-    // Count of bricks used for each Hex colour
-    hexToCount.forEach((value: number, key: string) => {
-        console.log('Hex ' + key + ' used: ' + value);
-    });
 
     // New Palette excluding Hex colours with less than chosen amount
     const newPalette = HEX_COLOUR_PALETTE.filter((hex) => {
@@ -159,11 +153,6 @@ export const makeMosaic = async (
         }
         instructions[y / sampleSize] = instructionsRow;
     }
-
-    // Hex Usage after dropping min
-    hexToCountAfter.forEach((value: number, key: string) => {
-        console.log('Final Hex ' + key + ' used: ' + value);
-    });
 
     const imageOutput = brickImageCan.toBuffer('image/jpeg', { quality: 0.75 });
 
