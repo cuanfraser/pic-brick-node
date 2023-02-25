@@ -38,6 +38,7 @@ export default (app: Express): void => {
                 const writtenFileName = `${fileName}-${fileCount}-mosaic.jpeg`;
                 await writeFile(writtenFileName, result);
 
+                res.set({'Location': 'https://www.pic-brick.com/order'});
                 res.contentType('image/jpeg');
                 res.download(writtenFileName);
 
