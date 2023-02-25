@@ -3,8 +3,8 @@ import { writeFile, rm } from 'node:fs/promises';
 import { getInstructionsForSubmission } from '../services/instructions.service.js';
 
 export default (app: Express): void => {
-    app.get('/api/results/:id', async (req: Request, res: Response) => {
-        console.groupCollapsed(['/api/results request']);
+    app.get('/api/instructions/:id', async (req: Request, res: Response) => {
+        console.groupCollapsed(['/api/instructions request']);
         try {
             
             const csvString = await getInstructionsForSubmission(req.params['id']);
