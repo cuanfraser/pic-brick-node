@@ -35,7 +35,7 @@ export default (app: Express): void => {
             for (const fileName of fileNames) {
                 const result = await makeMosaicFromJotForm(submission, fileName);
 
-                const writtenFileName = `file${fileCount}.jpeg`;
+                const writtenFileName = `${fileName}-${fileCount}-mosaic.jpeg`;
                 await writeFile(writtenFileName, result);
 
                 res.contentType('image/jpeg');
