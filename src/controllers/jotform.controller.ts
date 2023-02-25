@@ -1,5 +1,5 @@
 import { Express, Request, Response } from 'express';
-import { JotformSubmission } from '../models/jotform-submission/jotform-submission.model.js';
+import { JotformSubmissionModel } from '../models/jotform-submission/jotform-submission.model.js';
 import { makeMosaicFromJotForm } from '../services/jotform.service.js';
 import { writeFile, rm } from 'node:fs/promises';
 
@@ -21,7 +21,7 @@ export default (app: Express): void => {
                 currentFile = req.body[`fileupload[${i}]`];
             }
 
-            const submission = new JotformSubmission({
+            const submission = new JotformSubmissionModel({
                 submissionId: subId,
                 formId: formId,
                 ip: req.body.ip,

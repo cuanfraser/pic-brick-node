@@ -1,7 +1,7 @@
-import { Mosaic } from "../models/mosaic/mosaic.model.js";
+import { MosaicModel } from "../models/mosaic/mosaic.model.js";
 
 export const getHexCountCsv = async (): Promise<string> => {
-    const mosaics = await Mosaic.find();
+    const mosaics = await MosaicModel.find();
     const hexTotals = new Map<string, [number]>();
 
     for (const mosaic of mosaics) {

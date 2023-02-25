@@ -1,9 +1,9 @@
-import { JotformSubmission } from "../models/jotform-submission/jotform-submission.model.js";
+import { JotformSubmissionModel } from "../models/jotform-submission/jotform-submission.model.js";
 import { IMosaic } from "../models/mosaic/mosaic.schema.js";
 
 
 export const getInstructionsForSubmission = async (id: string): Promise<string> => 
-    JotformSubmission.findOne({submissionId: id}).populate<{mosaics: [IMosaic]}>('mosaics').orFail().then(sub=> {
+    JotformSubmissionModel.findOne({submissionId: id}).populate<{mosaics: [IMosaic]}>('mosaics').orFail().then(sub=> {
         let csvString = '';
 
         sub.mosaics.forEach(mosaic => {
