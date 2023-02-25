@@ -1,5 +1,5 @@
 import { Express, Request, Response } from 'express';
-import { writeFile } from 'node:fs/promises';
+import { writeFile, rm } from 'node:fs/promises';
 import { getHexCountCsv } from '../services/hex-count.service.js';
 
 export default (app: Express): void => {
@@ -11,6 +11,8 @@ export default (app: Express): void => {
             const fileName = 'totalHexCount.csv';
             await writeFile(fileName, csvString);
             res.download(fileName);
+
+            rm(fileName);
 
         } catch (error) {
             console.error(error);
