@@ -9,7 +9,7 @@ export interface IMosaic {
     sampleSize: number;
 }
 
-const mosaicSchema = new Schema<IMosaic>({
+export const mosaicSchema = new Schema<IMosaic>({
     size: String,
     originalImageName: String,
     buffer: { type: Buffer, required: true },
@@ -17,5 +17,3 @@ const mosaicSchema = new Schema<IMosaic>({
     instructions: [[String]],
     sampleSize: Number
 });
-
-export { mosaicSchema };
