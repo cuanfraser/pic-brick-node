@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "outDir": "./dist",
+        "target": "esnext",
+        "module": "esnext",
+        "moduleResolution": "node",
+        "sourceMap": true,
+        "baseUrl": "./src",
+        "lib": ["es2020", "es2020.promise", "es2020.bigint", "es2020.string"],
+        "strict": true,
+        "forceConsistentCasingInFileNames": true,
+        "allowSyntheticDefaultImports": true,
+        "allowUnreachableCode": false,
+        "allowUnusedLabels": false,
+        "noUnusedLocals": true
+    },
+    "exclude": [
+        "node_modules",
+        "reference",
+        "resources",
+        "./dist/**/*"
+    ]
+}
