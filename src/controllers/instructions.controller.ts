@@ -1,5 +1,5 @@
 import { Express, Request, Response } from 'express';
-import { writeFile } from 'node:fs/promises';
+import { writeFile, rm } from 'node:fs/promises';
 import { getInstructionsForSubmission } from '../services/instructions.service.js';
 
 export default (app: Express): void => {
@@ -12,6 +12,7 @@ export default (app: Express): void => {
             await writeFile(fileName, csvString);
             res.download(fileName);
 
+            await rm(fileName);
         } catch (error) {
             console.error(error);
             res.status(500).send('Internal server error, please try again later.');
