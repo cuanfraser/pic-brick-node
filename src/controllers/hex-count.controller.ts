@@ -12,7 +12,7 @@ export default (app: Express): void => {
             await writeFile(fileName, csvString);
             res.download(fileName);
 
-            rm(fileName);
+            await rm(fileName);
 
         } catch (error) {
             console.error(error);
