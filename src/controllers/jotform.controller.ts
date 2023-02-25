@@ -1,7 +1,7 @@
 import { Express, Request, Response } from 'express';
-import { JotformSubmission } from '../models/jotform-submission/jotform-submission.model.js';
+import { JotformSubmissionModel } from '../models/jotform-submission/jotform-submission.model.js';
 import { makeMosaicFromJotForm } from '../services/jotform.service.js';
-import { writeFile } from 'node:fs/promises';
+import { writeFile, rm } from 'node:fs/promises';
 
 export default (app: Express): void => {
     app.post('/api/jotform', async (req: Request, res: Response) => {
@@ -21,7 +21,7 @@ export default (app: Express): void => {
                 currentFile = req.body[`fileupload[${i}]`];
             }
 
-            const submission = new JotformSubmission({
+            const submission = new JotformSubmissionModel({
                 submissionId: subId,
                 formId: formId,
                 ip: req.body.ip,
@@ -35,11 +35,13 @@ export default (app: Express): void => {
             for (const fileName of fileNames) {
                 const result = await makeMosaicFromJotForm(submission, fileName);
 
-                const writtenFileName = `file${fileCount}.jpeg`;
+                const writtenFileName = `${fileName}-${fileCount}-mosaic.jpeg`;
                 await writeFile(writtenFileName, result);
 
                 res.contentType('image/jpeg');
                 res.download(writtenFileName);
+
+                await rm (writtenFileName);
                 //res.redirect('https://www.pic-brick.com/order')
                 fileCount++;
                 // TODO: REMOVE

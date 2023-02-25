@@ -3,8 +3,8 @@ import { JOTFORM_API_KEY, JOTFORM_LARGE_TEXT, JOTFORM_MEDIUM_TEXT, JOTFORM_SMALL
 import { processInputImage } from './image.service.js';
 import { makeMosaic } from './mosaic.service.js'
 import { IJotformSubmission } from '../models/jotform-submission/jotform-submission.schema.js';
-import { JotformSubmission } from '../models/jotform-submission/jotform-submission.model.js';
-import { Mosaic } from '../models/mosaic/mosaic.model.js';
+import { JotformSubmissionModel } from '../models/jotform-submission/jotform-submission.model.js';
+import { MosaicModel } from '../models/mosaic/mosaic.model.js';
 //import { removeBackground } from './removebg.service';
 //import { cartoonifyImage } from './cartoonify.service';
 
@@ -56,9 +56,9 @@ export const makeMosaicFromJotForm = async (
 
     const mosaicInfo = await makeMosaic(modifiedImage, widthBlocks, heightBlocks);
 
-    const mosaic = new Mosaic({ size: boardSize, originalImageName: fileName, buffer: mosaicInfo.image, hexToCountMap: mosaicInfo.hexToCountAfter, instructions: mosaicInfo.instructions, sampleSize: mosaicInfo.sampleSize });
+    const mosaic = new MosaicModel({ size: boardSize, originalImageName: fileName, buffer: mosaicInfo.image, hexToCountMap: mosaicInfo.hexToCountAfter, instructions: mosaicInfo.instructions, sampleSize: mosaicInfo.sampleSize });
     await mosaic.save();
-    await JotformSubmission.findByIdAndUpdate(jotformSubmission._id, { $push: { mosaics: mosaic }});
+    await JotformSubmissionModel.findByIdAndUpdate(jotformSubmission._id, { $push: { mosaics: mosaic }});
 
     return mosaicInfo.image;
 };
