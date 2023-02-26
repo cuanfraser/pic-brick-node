@@ -1,3 +1,4 @@
+import { HEX_COLOUR_NUM_MAP } from "../constants.js";
 import { JotformSubmissionModel } from "../models/jotform-submission/jotform-submission.model.js";
 import { IMosaic } from "../models/mosaic/mosaic.schema.js";
 
@@ -10,8 +11,8 @@ export const getInstructionsForSubmission = async (id: string): Promise<string> 
             let currentString = `${mosaic.originalImageName}(${mosaic.size})\n`;
             mosaic.instructions.forEach(row => {
                 row.forEach(column => {
-                    // get name/number instead of hex
-                    currentString += column + ',';
+                    const id = HEX_COLOUR_NUM_MAP.get(column)
+                    currentString += id + ',';
                 })
                 currentString += '\n';
             })
