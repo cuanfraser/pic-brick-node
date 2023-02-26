@@ -2,7 +2,7 @@
 // Sync object
 /** @type {import('@jest/types').Config.InitialOptions} */
 const config = {
-    verbose: false,
+    verbose: true,
     silent: true,
     testEnvironment: 'node',
     preset: 'ts-jest/presets/default-esm',
