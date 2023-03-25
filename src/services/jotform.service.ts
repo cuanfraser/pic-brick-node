@@ -1,10 +1,11 @@
 import fetch from 'node-fetch';
-import { JOTFORM_API_KEY, JOTFORM_LARGE_TEXT, JOTFORM_MEDIUM_TEXT, JOTFORM_SMALL_TEXT, JOTFORM_UPLOAD_URL, JOTFORM_USERNAME } from '../constants.js';
+import { HEX_COLOUR_BG_MAP, JOTFORM_API_KEY, JOTFORM_LARGE_TEXT, JOTFORM_MEDIUM_TEXT, JOTFORM_REPLACE_BG_YES, JOTFORM_SMALL_TEXT, JOTFORM_UPLOAD_URL, JOTFORM_USERNAME } from '../constants.js';
 import { processInputImage } from './image.service.js';
 import { makeMosaic } from './mosaic.service.js'
 import { IJotformSubmission } from '../models/jotform-submission/jotform-submission.schema.js';
 import { JotformSubmissionModel } from '../models/jotform-submission/jotform-submission.model.js';
 import { MosaicModel } from '../models/mosaic/mosaic.model.js';
+import { removeBackground } from './removebg.service.js';
 //import { removeBackground } from './removebg.service';
 //import { cartoonifyImage } from './cartoonify.service';
 
@@ -30,15 +31,24 @@ export const makeMosaicFromJotForm = async (
     jotformSubmission: IJotformSubmission,
     fileName: string,
 ): Promise<Buffer> => {
-    const formId = jotformSubmission.formId;
-    const subId = jotformSubmission.submissionId;
-    const boardSize = jotformSubmission.size;
-    const originalImage = await getJotFormImage(formId, subId, fileName);
+    
+    const originalImage = await getJotFormImage(jotformSubmission.formId, jotformSubmission.submissionId, fileName);
     const modifiedImage = await processInputImage(originalImage);
+
+    const backgroundColor = jotformSubmission.backgroundColor;
+    let bgImage = modifiedImage;
+    if (jotformSubmission.replaceBackground === JOTFORM_REPLACE_BG_YES) {
+        if (!HEX_COLOUR_BG_MAP.has(backgroundColor)) {
+            throw new Error(`Unavailable background color chosen (${backgroundColor}).`);
+        }
+        const bgHex = HEX_COLOUR_BG_MAP.get(backgroundColor);
+        bgImage = await removeBackground(modifiedImage, bgHex!);
+    }
+
     // const cartoon = await cartoonifyImage(modifiedImage);
-    // const noBg = await removeBackground(cartoon);
 
     // Calculate Sample Size based on Physical Size
+    const boardSize = jotformSubmission.size;
     console.log(boardSize);
     let widthBlocks = 64;
     let heightBlocks = 64;
@@ -54,7 +64,7 @@ export const makeMosaicFromJotForm = async (
         heightBlocks = 96;
     }
 
-    const mosaicInfo = await makeMosaic(modifiedImage, widthBlocks, heightBlocks);
+    const mosaicInfo = await makeMosaic(bgImage, widthBlocks, heightBlocks);
 
     const mosaic = new MosaicModel({ size: boardSize, originalImageName: fileName, buffer: mosaicInfo.image, hexToCountMap: mosaicInfo.hexToCountAfter, instructions: mosaicInfo.instructions, sampleSize: mosaicInfo.sampleSize });
     await mosaic.save();
