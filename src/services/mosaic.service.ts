@@ -164,7 +164,7 @@ export const makeMosaic = async (
         sampleSize: sampleSize
     };
 
-    console.timeEnd('pixelate');
+    console.timeEnd('makeMosaic');
     console.groupEnd();
 
     return output;
