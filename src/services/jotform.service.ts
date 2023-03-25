@@ -14,11 +14,11 @@ export const getJotFormImage = async (
     subId: string,
     fileName: string,
 ): Promise<Buffer> => {
-    console.time('jotImage');
+    console.time('getJotFormImage');
     const imageUrl = `${JOTFORM_UPLOAD_URL}/${JOTFORM_USERNAME}/${formId}/${subId}/${encodeURIComponent(fileName)}?apiKey=${JOTFORM_API_KEY}`;
     console.log('JotForm Image Retrieval URL: ' + imageUrl);
     const resp = await fetch(imageUrl);
-    console.timeEnd('jotImage');
+    console.timeEnd('getJotFormImage');
     if (resp.ok) {
         return resp.buffer();
     } else {
