@@ -1,18 +1,18 @@
-import { HEX_BACKGROUND_COLOUR, REMOVE_BG_API_KEY, REMOVE_BG_URL } from '../constants.js';
-import fetch, { Response } from 'node-fetch';
-import FormData from 'form-data';
+import { NODE_ENV, NODE_ENV_PROD, REMOVE_BG_API_KEY, REMOVE_BG_URL } from '../constants.js';
+import fetch, { Response, FormData } from 'node-fetch';
 
-const removeBackground = async (img: Buffer): Promise<Buffer> => {
+const removeBackground = async (img: Buffer, bgHex: string): Promise<Buffer> => {
     console.time('removeBg');
 
     const formData = new FormData();
-    // TODO: Change to Auto on production
-    formData.append('size', 'preview');
-    formData.append('image_file', img);
-    formData.append('type', 'auto');
-    formData.append('format', 'jpg');
-    const bgCol = HEX_BACKGROUND_COLOUR.substring(1);
-    formData.append('bg_color', bgCol);
+    
+    const size = NODE_ENV === NODE_ENV_PROD ? 'auto' : 'preview';
+
+    formData.set('size', size);
+    formData.set('image_file', new Blob([img]));
+    formData.set('type', 'auto');
+    formData.set('format', 'jpg');
+    formData.set('bg_color', bgHex);
 
     const resp: Response = await fetch(REMOVE_BG_URL, {
         method: 'POST',
@@ -21,7 +21,7 @@ const removeBackground = async (img: Buffer): Promise<Buffer> => {
     });
 
     if (!resp.ok) {
-        throw new Error(`remove.bg error: ${resp.statusText}`);
+        throw new Error(`remove.bg error: ${resp.status}: ${resp.statusText}`);
     }
 
     console.timeEnd('removeBg');
