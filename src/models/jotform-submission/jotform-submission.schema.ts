@@ -7,6 +7,7 @@ export interface IJotformSubmission {
     ip: string;
     email: string;
     size: string;
+    replaceBackground: string;
     backgroundColor: string;
     imageNames: [string];
     mosaics: [Types.ObjectId];
@@ -19,6 +20,7 @@ export const jotformSubmissionSchema = new Schema<IJotformSubmission>(
         ip: String,
         email: String,
         size: String,
+        replaceBackground: String,
         backgroundColor: String,
         imageNames: [String],
         mosaics: { type: [Schema.Types.ObjectId], ref: 'Mosaic' },

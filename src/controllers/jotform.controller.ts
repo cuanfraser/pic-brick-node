@@ -12,6 +12,7 @@ export default (app: Express): void => {
             const formId = req.body.formID;
             const subId = req.body.submission_id;
             const size = req.body.size;
+            const replaceBackground = req.body.replace_background;
             const backgroundColor = req.body.background_color;
 
             const fileNames: string[] = [];
@@ -29,6 +30,7 @@ export default (app: Express): void => {
                 ip: req.body.ip,
                 email: req.body.email,
                 size: size,
+                replaceBackground: replaceBackground,
                 backgroundColor: backgroundColor,
                 imageNames: fileNames
             });
