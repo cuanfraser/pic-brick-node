@@ -1,12 +1,14 @@
-import { REMOVE_BG_API_KEY, REMOVE_BG_URL } from '../constants.js';
+import { NODE_ENV, NODE_ENV_PROD, REMOVE_BG_API_KEY, REMOVE_BG_URL } from '../constants.js';
 import fetch, { Response, FormData } from 'node-fetch';
 
 const removeBackground = async (img: Buffer, bgHex: string): Promise<Buffer> => {
     console.time('removeBg');
 
     const formData = new FormData();
-    // TODO: Change to Auto on production
-    formData.set('size', 'preview');
+    
+    const size = NODE_ENV === NODE_ENV_PROD ? 'auto' : 'preview';
+
+    formData.set('size', size);
     formData.set('image_file', new Blob([img]));
     formData.set('type', 'auto');
     formData.set('format', 'jpg');

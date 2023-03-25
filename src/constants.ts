@@ -9,6 +9,8 @@ export const __dirname = dirname(__filename);
 
 // development, testing, production
 export const NODE_ENV = process.env.NODE_ENV;
+export const NODE_ENV_DEV = 'development';
+export const NODE_ENV_PROD = 'production';
 
 export const JOTFORM_USERNAME = process.env.JOTFORM_USERNAME;
 export const JOTFORM_UPLOAD_URL = 'https://www.jotform.com/uploads';
