@@ -21,7 +21,7 @@ const removeBackground = async (img: Buffer, bgHex: string): Promise<Buffer> => 
     });
 
     if (!resp.ok) {
-        console.log(resp.body);
+        console.log(await resp.text())
         throw new Error(`remove.bg error: ${resp.status}: ${resp.statusText}`);
     }
 
