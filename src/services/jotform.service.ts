@@ -22,7 +22,7 @@ export const processJotformSubmission = async (submission: IJotformSubmission): 
     const nameToFile = new Map<string, Buffer>();
     for (const originalImageName of submission.imageNames) {
         const result = await makeMosaicFromJotForm(submission, originalImageName);
-        const resultFileName = `${originalImageName}-${submission.imageNames.length}-mosaic.jpeg`;
+        const resultFileName = `${submission.submissionId}-mosaic-${submission.imageNames.length}.jpeg`;
 
         if (submission.imageNames.length === 1) {
             await writeFile(resultFileName, result);
@@ -37,7 +37,7 @@ export const processJotformSubmission = async (submission: IJotformSubmission): 
         zip.file(fileName, file);
     });
     const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
-    const fileName = 'pic-brick-preview-images.zip';
+    const fileName = `${submission.submissionId}-mosaics.zip`;
     await writeFile(fileName, zipBuffer);
     return fileName;
 };
@@ -77,7 +77,7 @@ export const makeMosaicFromJotForm = async (
 
     const backgroundColor = jotformSubmission.backgroundColor;
     let bgImage = modifiedImage;
-    if (jotformSubmission.replaceBackground === JOTFORM_REPLACE_BG_YES) {
+    if (jotformSubmission.replaceBackground.startsWith(JOTFORM_REPLACE_BG_YES)) {
         if (!HEX_COLOUR_BG_MAP.has(backgroundColor)) {
             throw new Error(`Unavailable background color chosen (${backgroundColor}).`);
         }
@@ -95,13 +95,13 @@ export const makeMosaicFromJotForm = async (
     let widthBlocks = 64;
     let heightBlocks = 64;
     // Sample Size = (Res / Blocks #)
-    if (boardSize === JOTFORM_SMALL_TEXT) {
+    if (boardSize.startsWith(JOTFORM_SMALL_TEXT)) {
         widthBlocks = 64;
         heightBlocks = 64;
-    } else if (boardSize === JOTFORM_MEDIUM_TEXT) {
+    } else if (boardSize.startsWith(JOTFORM_MEDIUM_TEXT)) {
         widthBlocks = 96;
         heightBlocks = 64;
-    } else if (boardSize === JOTFORM_LARGE_TEXT) {
+    } else if (boardSize.startsWith(JOTFORM_LARGE_TEXT)) {
         widthBlocks = 96;
         heightBlocks = 96;
     }
