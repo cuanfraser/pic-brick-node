@@ -9,7 +9,7 @@ const removeBackground = async (img: Buffer, bgHex: string): Promise<Buffer> => 
     const size = NODE_ENV === NODE_ENV_PROD ? 'auto' : 'preview';
 
     formData.set('size', size);
-    formData.set('image_file', new Blob([img]));
+    formData.set('image_file_b64', img.toString('base64'));
     formData.set('type', 'auto');
     formData.set('format', 'jpg');
     formData.set('bg_color', bgHex);
