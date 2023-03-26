@@ -22,7 +22,7 @@ export const processJotformSubmission = async (submission: IJotformSubmission): 
     const nameToFile = new Map<string, Buffer>();
     for (const originalImageName of submission.imageNames) {
         const result = await makeMosaicFromJotForm(submission, originalImageName);
-        const resultFileName = `${originalImageName}-${submission.imageNames.length}-mosaic.jpeg`;
+        const resultFileName = `${submission.submissionId}-mosaic-${submission.imageNames.length}.jpeg`;
 
         if (submission.imageNames.length === 1) {
             await writeFile(resultFileName, result);
@@ -37,7 +37,7 @@ export const processJotformSubmission = async (submission: IJotformSubmission): 
         zip.file(fileName, file);
     });
     const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
-    const fileName = 'pic-brick-preview-images.zip';
+    const fileName = `${submission.submissionId}-mosaics.zip`;
     await writeFile(fileName, zipBuffer);
     return fileName;
 };
