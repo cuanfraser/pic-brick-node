@@ -10,16 +10,39 @@ export const getInstructionsForSubmission = async (id: string): Promise<string> 
             let csvString = '';
 
             sub.mosaics.forEach((mosaic) => {
-                let currentString = `${mosaic.originalImageName}(${mosaic.size})\n`;
-                mosaic.instructions.forEach((row) => {
-                    row.forEach((column) => {
-                        const id = HEX_COLOUR_NUM_MAP.get(column);
-                        currentString += id + ',';
-                    });
-                    currentString += '\n';
-                });
-                csvString += currentString + '\n';
+                // Name of mosaic at top
+                const headerString = `${mosaic.originalImageName}(${mosaic.size})\n`;
+
+                const hexCountString = getHexCount(mosaic);
+
+                // Convert Hexs to color IDs from map
+                const instructionsMapString = getInstructionsAsColorIds(mosaic);
+
+                csvString += `${headerString}\n${hexCountString}\n${instructionsMapString}\n`;
             });
 
             return csvString;
         });
+
+const getHexCount = (mosaic: IMosaic): string => {
+    let hexCountString = 'colorId,hex,count\n';
+    HEX_COLOUR_NUM_MAP.forEach((colorId, hex) => {
+        const count = mosaic.hexToCountMap.get(hex);
+        const current = `${colorId},${hex},${count ? count : 0}\n`;
+        hexCountString += current;
+    });
+
+    return hexCountString;
+};
+
+function getInstructionsAsColorIds(mosaic: IMosaic) {
+    let instructionsMapString = '';
+    mosaic.instructions.forEach((row) => {
+        row.forEach((column) => {
+            const id = HEX_COLOUR_NUM_MAP.get(column);
+            instructionsMapString += id + ',';
+        });
+        instructionsMapString += '\n';
+    });
+    return instructionsMapString;
+}
