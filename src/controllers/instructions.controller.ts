@@ -6,7 +6,6 @@ export default (app: Express): void => {
     app.get('/api/instructions/:id', async (req: Request, res: Response) => {
         console.groupCollapsed(['/api/instructions request']);
         try {
-            
             const csvString = await getInstructionsForSubmission(req.params['id']);
             const fileName = `${req.params['id']}-instructions.csv`;
             await writeFile(fileName, csvString);

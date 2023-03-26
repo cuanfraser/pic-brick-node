@@ -6,8 +6,6 @@ import { IJotformSubmission } from '../models/jotform-submission/jotform-submiss
 import { JotformSubmissionModel } from '../models/jotform-submission/jotform-submission.model.js';
 import { MosaicModel } from '../models/mosaic/mosaic.model.js';
 import { removeBackground } from './removebg.service.js';
-//import { removeBackground } from './removebg.service';
-//import { cartoonifyImage } from './cartoonify.service';
 
 export const getJotFormImage = async (
     formId: string,
