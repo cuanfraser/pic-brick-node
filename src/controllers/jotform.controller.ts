@@ -30,14 +30,13 @@ export default (app: Express): void => {
                 size: size,
                 replaceBackground: replaceBackground,
                 backgroundColor: backgroundColor,
-                imageNames: fileNames
+                imageNames: fileNames,
             });
             await submission.save();
 
             const fileName = await processJotformSubmission(submission);
             res.download(fileName);
-            await rm (fileName);
-
+            await rm(fileName);
         } catch (error) {
             console.error(error);
             res.status(500).send('Internal server error, please try again later.');

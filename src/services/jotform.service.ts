@@ -18,8 +18,7 @@ import { removeBackground } from './removebg.service.js';
 import { writeFile } from 'node:fs/promises';
 import JSZip from 'jszip';
 
-export const processJotformSubmission = async(submission: IJotformSubmission): Promise<string> => {
-
+export const processJotformSubmission = async (submission: IJotformSubmission): Promise<string> => {
     const nameToFile = new Map<string, Buffer>();
     for (const originalImageName of submission.imageNames) {
         const result = await makeMosaicFromJotForm(submission, originalImageName);
@@ -36,12 +35,12 @@ export const processJotformSubmission = async(submission: IJotformSubmission): P
     const zip = new JSZip();
     nameToFile.forEach((file, fileName) => {
         zip.file(fileName, file);
-    })
-    const zipBuffer = await zip.generateAsync({type: 'nodebuffer'});
+    });
+    const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
     const fileName = 'pic-brick-preview-images.zip';
     await writeFile(fileName, zipBuffer);
     return fileName;
-}
+};
 
 export const getJotFormImage = async (
     formId: string,
@@ -85,7 +84,6 @@ export const makeMosaicFromJotForm = async (
         const bgHex = HEX_COLOUR_BG_MAP.get(backgroundColor);
         bgImage = await removeBackground(modifiedImage, bgHex!);
     }
-
 
     // Calculate Sample Size based on Physical Size
     const boardSize = jotformSubmission.size;
