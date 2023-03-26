@@ -1,11 +1,46 @@
 import fetch from 'node-fetch';
-import { HEX_COLOUR_BG_MAP, JOTFORM_API_KEY, JOTFORM_LARGE_TEXT, JOTFORM_MEDIUM_TEXT, JOTFORM_REPLACE_BG_YES, JOTFORM_SMALL_TEXT, JOTFORM_UPLOAD_URL, JOTFORM_USERNAME } from '../constants.js';
+import {
+    HEX_COLOUR_BG_MAP,
+    JOTFORM_API_KEY,
+    JOTFORM_LARGE_TEXT,
+    JOTFORM_MEDIUM_TEXT,
+    JOTFORM_REPLACE_BG_YES,
+    JOTFORM_SMALL_TEXT,
+    JOTFORM_UPLOAD_URL,
+    JOTFORM_USERNAME,
+} from '../constants.js';
 import { processInputImage } from './image.service.js';
-import { makeMosaic } from './mosaic.service.js'
+import { makeMosaic } from './mosaic.service.js';
 import { IJotformSubmission } from '../models/jotform-submission/jotform-submission.schema.js';
 import { JotformSubmissionModel } from '../models/jotform-submission/jotform-submission.model.js';
 import { MosaicModel } from '../models/mosaic/mosaic.model.js';
 import { removeBackground } from './removebg.service.js';
+import { writeFile } from 'node:fs/promises';
+import JSZip from 'jszip';
+
+export const processJotformSubmission = async (submission: IJotformSubmission): Promise<string> => {
+    const nameToFile = new Map<string, Buffer>();
+    for (const originalImageName of submission.imageNames) {
+        const result = await makeMosaicFromJotForm(submission, originalImageName);
+        const resultFileName = `${originalImageName}-${submission.imageNames.length}-mosaic.jpeg`;
+
+        if (submission.imageNames.length === 1) {
+            await writeFile(resultFileName, result);
+            return resultFileName;
+        }
+
+        nameToFile.set(resultFileName, result);
+    }
+
+    const zip = new JSZip();
+    nameToFile.forEach((file, fileName) => {
+        zip.file(fileName, file);
+    });
+    const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
+    const fileName = 'pic-brick-preview-images.zip';
+    await writeFile(fileName, zipBuffer);
+    return fileName;
+};
 
 export const getJotFormImage = async (
     formId: string,
@@ -13,14 +48,18 @@ export const getJotFormImage = async (
     fileName: string,
 ): Promise<Buffer> => {
     console.time('getJotFormImage');
-    const imageUrl = `${JOTFORM_UPLOAD_URL}/${JOTFORM_USERNAME}/${formId}/${subId}/${encodeURIComponent(fileName)}?apiKey=${JOTFORM_API_KEY}`;
+    const imageUrl = `${JOTFORM_UPLOAD_URL}/${JOTFORM_USERNAME}/${formId}/${subId}/${encodeURIComponent(
+        fileName,
+    )}?apiKey=${JOTFORM_API_KEY}`;
     console.log('JotForm Image Retrieval URL: ' + imageUrl);
     const resp = await fetch(imageUrl);
     console.timeEnd('getJotFormImage');
     if (resp.ok) {
         return resp.buffer();
     } else {
-        throw new Error(`Failed retrieving image (${fileName}) from JotForm with response: "${resp.status}: ${resp.statusText}"`);
+        throw new Error(
+            `Failed retrieving image (${fileName}) from JotForm with response: "${resp.status}: ${resp.statusText}"`,
+        );
     }
 };
 
@@ -29,8 +68,11 @@ export const makeMosaicFromJotForm = async (
     jotformSubmission: IJotformSubmission,
     fileName: string,
 ): Promise<Buffer> => {
-    
-    const originalImage = await getJotFormImage(jotformSubmission.formId, jotformSubmission.submissionId, fileName);
+    const originalImage = await getJotFormImage(
+        jotformSubmission.formId,
+        jotformSubmission.submissionId,
+        fileName,
+    );
     const modifiedImage = await processInputImage(originalImage);
 
     const backgroundColor = jotformSubmission.backgroundColor;
@@ -43,11 +85,8 @@ export const makeMosaicFromJotForm = async (
         bgImage = await removeBackground(modifiedImage, bgHex!);
     }
 
-    // const cartoon = await cartoonifyImage(modifiedImage);
-
     // Calculate Sample Size based on Physical Size
     const boardSize = jotformSubmission.size;
-    console.log(boardSize);
     let widthBlocks = 64;
     let heightBlocks = 64;
     // Sample Size = (Res / Blocks #)
@@ -64,9 +103,18 @@ export const makeMosaicFromJotForm = async (
 
     const mosaicInfo = await makeMosaic(bgImage, widthBlocks, heightBlocks);
 
-    const mosaic = new MosaicModel({ size: boardSize, originalImageName: fileName, buffer: mosaicInfo.image, hexToCountMap: mosaicInfo.hexToCountAfter, instructions: mosaicInfo.instructions, sampleSize: mosaicInfo.sampleSize });
+    const mosaic = new MosaicModel({
+        size: boardSize,
+        originalImageName: fileName,
+        buffer: mosaicInfo.image,
+        hexToCountMap: mosaicInfo.hexToCountAfter,
+        instructions: mosaicInfo.instructions,
+        sampleSize: mosaicInfo.sampleSize,
+    });
     await mosaic.save();
-    await JotformSubmissionModel.findByIdAndUpdate(jotformSubmission._id, { $push: { mosaics: mosaic }});
+    await JotformSubmissionModel.findByIdAndUpdate(jotformSubmission._id, {
+        $push: { mosaics: mosaic },
+    });
 
     return mosaicInfo.image;
 };
