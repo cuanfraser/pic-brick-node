@@ -3,7 +3,7 @@ export let NODE_ENV = process.env.NODE_ENV;
 export const NODE_ENV_DEV = 'development';
 export const NODE_ENV_PROD = 'production';
 
-if (NODE_ENV !== NODE_ENV_PROD) {
+if (!NODE_ENV) {
     const dotenv = await import('dotenv');
     //import * as dotenv from 'dotenv' // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
     dotenv.config();
