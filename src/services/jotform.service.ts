@@ -15,6 +15,33 @@ import { IJotformSubmission } from '../models/jotform-submission/jotform-submiss
 import { JotformSubmissionModel } from '../models/jotform-submission/jotform-submission.model.js';
 import { MosaicModel } from '../models/mosaic/mosaic.model.js';
 import { removeBackground } from './removebg.service.js';
+import { writeFile } from 'node:fs/promises';
+import JSZip from 'jszip';
+
+export const processJotformSubmission = async(submission: IJotformSubmission): Promise<string> => {
+
+    const nameToFile = new Map<string, Buffer>();
+    for (const originalImageName of submission.imageNames) {
+        const result = await makeMosaicFromJotForm(submission, originalImageName);
+        const resultFileName = `${originalImageName}-${submission.imageNames.length}-mosaic.jpeg`;
+
+        if (submission.imageNames.length === 1) {
+            await writeFile(resultFileName, result);
+            return resultFileName;
+        }
+
+        nameToFile.set(resultFileName, result);
+    }
+
+    const zip = new JSZip();
+    nameToFile.forEach((file, fileName) => {
+        zip.file(fileName, file);
+    })
+    const zipBuffer = await zip.generateAsync({type: 'nodebuffer'});
+    const fileName = 'pic-brick-preview-images.zip';
+    await writeFile(fileName, zipBuffer);
+    return fileName;
+}
 
 export const getJotFormImage = async (
     formId: string,
@@ -59,11 +86,9 @@ export const makeMosaicFromJotForm = async (
         bgImage = await removeBackground(modifiedImage, bgHex!);
     }
 
-    // const cartoon = await cartoonifyImage(modifiedImage);
 
     // Calculate Sample Size based on Physical Size
     const boardSize = jotformSubmission.size;
-    console.log(boardSize);
     let widthBlocks = 64;
     let heightBlocks = 64;
     // Sample Size = (Res / Blocks #)
