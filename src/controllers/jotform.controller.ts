@@ -26,6 +26,8 @@ export default (app: Express): void => {
                 submissionId: subId,
                 formId: formId,
                 ip: req.body.ip,
+                firstName: req.body['name[first]'],
+                lastName: req.body['name[last]'],
                 email: req.body.email,
                 size: size,
                 replaceBackground: replaceBackground,

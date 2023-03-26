@@ -5,6 +5,8 @@ export interface IJotformSubmission {
     submissionId: string;
     formId: string;
     ip: string;
+    firstName: string;
+    lastName: string;
     email: string;
     size: string;
     replaceBackground: string;
@@ -18,6 +20,8 @@ export const jotformSubmissionSchema = new Schema<IJotformSubmission>(
         submissionId: String,
         formId: String,
         ip: String,
+        firstName: String,
+        lastName: String,
         email: String,
         size: String,
         replaceBackground: String,
