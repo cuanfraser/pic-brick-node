@@ -22,9 +22,9 @@ export const JOTFORM_UPLOAD_URL = 'https://www.jotform.com/uploads';
 export const JOTFORM_API_KEY = process.env.JOTFORM_API_KEY;
 
 // Size Jotform Text
-export const JOTFORM_SMALL_TEXT = 'Small 64x64';
-export const JOTFORM_MEDIUM_TEXT = 'Medium 96x64';
-export const JOTFORM_LARGE_TEXT = 'Large 96x96';
+export const JOTFORM_SMALL_TEXT = 'Small';
+export const JOTFORM_MEDIUM_TEXT = 'Medium';
+export const JOTFORM_LARGE_TEXT = 'Large';
 
 // Background Color Jotform Text
 export const JOTFORM_REPLACE_BG_YES = 'Yes';
@@ -33,7 +33,7 @@ export const JOTFORM_BG_PINK_TEXT = 'Pink';
 export const JOTFORM_BG_YELLOW_TEXT = 'Yellow';
 export const JOTFORM_BG_GREEN_TEXT = 'Green';
 export const JOTFORM_BG_LIGHT_GREEN_TEXT = 'Light Green';
-export const JOTFORM_BG_LIGHT_BLUE_TEXT = 'Light Blue';
+export const JOTFORM_BG_LIGHT_BLUE_TEXT = 'Light Blue (popular)';
 
 export const HEX_COLOUR_BG_MAP = new Map([    
     [JOTFORM_BG_PINK_TEXT, 'EFA6C8'],
