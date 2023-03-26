@@ -9,6 +9,7 @@ if (!NODE_ENV) {
     dotenv.config();
     NODE_ENV = process.env.NODE_ENV;
 }
+console.log('NODE_ENV: ' + NODE_ENV);
 
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
