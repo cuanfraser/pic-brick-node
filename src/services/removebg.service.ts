@@ -21,9 +21,7 @@ const removeBackground = async (img: Buffer, bgHex: string): Promise<Buffer> => 
     });
 
     if (!resp.ok) {
-        formData.forEach((value, key) => {
-            console.log(`${key}: ${value}`);
-        })
+        console.timeEnd('removeBg');
         throw new Error(`remove.bg error: ${resp.status}: ${resp.statusText}: ${await resp.text()}`);
     }
 
