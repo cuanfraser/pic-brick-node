@@ -76,13 +76,13 @@ export const makeMosaicFromJotForm = async (
     const modifiedImage = await processInputImage(originalImage);
 
     const backgroundColor = jotformSubmission.backgroundColor;
-    let bgImage = originalImage;
+    let bgImage = modifiedImage;
     if (jotformSubmission.replaceBackground === JOTFORM_REPLACE_BG_YES) {
         if (!HEX_COLOUR_BG_MAP.has(backgroundColor)) {
             throw new Error(`Unavailable background color chosen (${backgroundColor}).`);
         }
         const bgHex = HEX_COLOUR_BG_MAP.get(backgroundColor);
-        bgImage = await removeBackground(originalImage, bgHex!);
+        bgImage = await removeBackground(modifiedImage, bgHex!);
     }
 
     // Calculate Sample Size based on Physical Size
