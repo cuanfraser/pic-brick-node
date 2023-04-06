@@ -8,7 +8,8 @@
         "postinstall": "npx tsc",
         "test": "NODE_OPTIONS=--experimental-vm-modules jest",
         "start": "node ./dist/index.js",
-        "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix"
+        "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
+        "dev": "npm install && npm run start"
     },
     "author": "cuanfraser",
     "license": "ISC",
