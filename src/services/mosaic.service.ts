@@ -2,6 +2,9 @@ import Canvas from 'canvas';
 import { HEX_COLOUR_PALETTE, MIN_HEX_COUNT } from '../constants.js';
 import { cropImageToBoardSize } from './image.service.js';
 import nearestColour from 'nearest-color';
+import { JotformSubmissionModel } from '../models/jotform-submission/jotform-submission.model.js';
+import { IMosaic } from '../models/mosaic/mosaic.schema.js';
+import { writeFile } from 'node:fs/promises';
 
 export const brickImgs: { [key: string]: Canvas.Image; } = {};
 //Load images of individual bricks
@@ -169,3 +172,28 @@ export const makeMosaic = async (
 
     return output;
 };
+
+export const getMosaicForSubmission = async (id: string): Promise<string> => {
+    return JotformSubmissionModel.findOne({ submissionId: id })
+        .populate<{ mosaics: [IMosaic] }>('mosaics')
+        .orFail()
+        .then(async (sub) => {
+            if (sub.mosaics.length != 1) {
+                throw new Error(
+                    `Unsupported number of mosaics in this submission (${sub.mosaics.length}).`,
+                );
+            }
+            const mosaic = sub.mosaics[0];
+            const resultFileName = `${sub.submissionId}-mosaic-${sub.imageNames.length}.jpeg`;
+            await writeFile(resultFileName, mosaic.buffer);
+            return resultFileName;
+        });
+};
+
+export const getMosaicForLatestSubmission = async (): Promise<string> => {
+    const latestSubmission = await JotformSubmissionModel.findOne({}, {}, {sort: {'created_at' : -1}});
+    if (!latestSubmission) {
+        throw new Error('No submissions found');
+    }
+    return getMosaicForSubmission(latestSubmission.submissionId);
+}
