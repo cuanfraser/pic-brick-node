@@ -4,10 +4,14 @@ import mongoose from 'mongoose';
 import { MONGODB_URI } from './constants.js';
 import hexCountController from './controllers/hex-count.controller.js';
 import instructionsController from './controllers/instructions.controller.js';
+import mosaicController from './controllers/mosaic.controller.js';
+import { loadBrickImages } from './services/mosaic.service.js';
 const app = express();
 const port = process.env.PORT || 8555;
 
 const main = async () => {
+
+    loadBrickImages();
 
     mongoose.set('strictQuery', false);
     let dbConnectionString = 'mongodb://localhost:27017/pic-brick';
@@ -31,6 +35,7 @@ const main = async () => {
     jotformController(app);
     hexCountController(app);
     instructionsController(app);
+    mosaicController(app);
 
     app.listen(port, () => console.log('Listening on port ' + port));
 }

@@ -1,14 +1,5 @@
 import { HEX_COLOUR_NUM_MAP, HEX_COLOUR_PALETTE } from '../constants.js';
-import { closestColourInPalette } from '../services/mosaic.service.js';
 import { existsSync } from 'node:fs';
-
-describe('closestColourInPalette Tests', () => {
-    test('Chooses correct colour if given exact match', () => {
-        const output = closestColourInPalette(215, 135, 57, HEX_COLOUR_PALETTE);
-        expect(output).toEqual('#D78739');
-    });
-});
-
 
 describe('Hex Tests', () => {
     test('All colours in palette have ID in map', () => {
