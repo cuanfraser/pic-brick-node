@@ -6,7 +6,7 @@ import { JotformSubmissionModel } from '../models/jotform-submission/jotform-sub
 import { IMosaic } from '../models/mosaic/mosaic.schema.js';
 import { writeFile } from 'node:fs/promises';
 
-export const brickImgs: { [key: string]: Canvas.Image; } = {};
+export const brickImgs: { [key: string]: Canvas.Image } = {};
 //Load images of individual bricks
 export const loadBrickImages = async (): Promise<void> => {
     // For each hex colour, load image and set as canvas image object inside brickImgs array.
@@ -19,19 +19,23 @@ export const loadBrickImages = async (): Promise<void> => {
 };
 
 // Finds closest hex colour in colour palette when given RGB val
-export const closestColourInPalette = (r: number, g: number, b: number, palette: string[]): string => {
+export const closestColourInPalette = (
+    r: number,
+    g: number,
+    b: number,
+    palette: string[],
+): string => {
     const matcher = nearestColour.from(palette);
     return matcher(`rgb(${r}, ${g}, ${b})`);
 };
 
 export interface MosaicInfo {
-    image: Buffer,
-    hexToCountBefore: Map<string, number>,
-    hexToCountAfter: Map<string, number>,
-    instructions: string[][],
-    sampleSize: number
+    image: Buffer;
+    hexToCountBefore: Map<string, number>;
+    hexToCountAfter: Map<string, number>;
+    instructions: string[][];
+    sampleSize: number;
 }
-
 
 // Make image into pixelated area reped by bricks
 export const makeMosaic = async (
@@ -164,7 +168,7 @@ export const makeMosaic = async (
         hexToCountBefore: hexToCount,
         hexToCountAfter: hexToCountAfter,
         instructions: instructions,
-        sampleSize: sampleSize
+        sampleSize: sampleSize,
     };
 
     console.timeEnd('makeMosaic');
@@ -191,9 +195,13 @@ export const getMosaicForSubmission = async (id: string): Promise<string> => {
 };
 
 export const getMosaicForLatestSubmission = async (): Promise<string> => {
-    const latestSubmission = await JotformSubmissionModel.findOne({}, {}, {sort: {'created_at' : -1}});
+    const latestSubmission = await JotformSubmissionModel.findOne(
+        {},
+        {},
+        { sort: { date: -1 } },
+    );
     if (!latestSubmission) {
         throw new Error('No submissions found');
     }
     return getMosaicForSubmission(latestSubmission.submissionId);
-}
+};

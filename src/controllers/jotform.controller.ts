@@ -24,6 +24,7 @@ export default (app: Express): void => {
 
             const submission = new JotformSubmissionModel({
                 submissionId: subId,
+                date: new Date(),
                 formId: formId,
                 ip: req.body.ip,
                 firstName: req.body['name[first]'],
