@@ -1,7 +1,8 @@
-import { Schema, Types } from 'mongoose';
+import { Date, Schema, Types } from 'mongoose';
 
 export interface IJotformSubmission {
     _id: Types.ObjectId;
+    date: Date;
     submissionId: string;
     formId: string;
     ip: string;
@@ -18,6 +19,7 @@ export interface IJotformSubmission {
 export const jotformSubmissionSchema = new Schema<IJotformSubmission>(
     {
         submissionId: String,
+        date: Date,
         formId: String,
         ip: String,
         firstName: String,
