@@ -16,7 +16,7 @@ export default (app: Express): void => {
             await rm(fileName);
         } catch (error) {
             console.error(error);
-            res.status(500).send('Internal server error, please try again later.');
+            res.status(500).send(`Interal server error (${error})`);
         }
         console.groupEnd();
     });
