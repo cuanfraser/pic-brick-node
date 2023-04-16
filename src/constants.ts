@@ -67,7 +67,8 @@ export const HEX_COLOUR_PALETTE = [
     '#46729D',
     '#894C33',
     '#A8BB55',
-    '#282828',
+    // '#282828', THIS IS THE BLACK BELOW
+    '#0A0A0A',
     '#813232',
     '#7D7F80',
     '#EBD8D5',
@@ -137,7 +138,7 @@ export const HEX_COLOUR_NUM_MAP = new Map([
     ['#46729D',	23],
     ['#894C33',	26],
     ['#A8BB55',	27],
-    ['#282828',	29],
+    ['#0A0A0A',	29],
     ['#813232',	30],
     ['#7D7F80',	31],
     ['#EBD8D5',	32],
