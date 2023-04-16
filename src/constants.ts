@@ -51,7 +51,7 @@ export const MONGODB_URI = process.env.MONGODB_URI;
 export const REMOVE_BG_URL = 'https://api.remove.bg/v1.0/removebg';
 export const REMOVE_BG_API_KEY = process.env.REMOVE_BG_API_KEY;
 
-export const MIN_HEX_COUNT = 5;
+export const MIN_HEX_COUNT = 10;
 
 export const HEX_COLOUR_PALETTE = [
     '#DF291E',
