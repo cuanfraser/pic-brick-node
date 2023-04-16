@@ -1,11 +1,13 @@
 import { Express, Request, Response } from 'express';
 import { rm } from 'node:fs/promises';
 import { getMosaicForLatestSubmission, getMosaicForSubmission } from '../services/mosaic.service.js';
+import { authenticateKey } from '../services/auth.service.js';
 
 export default (app: Express): void => {
     app.get('/api/mosaic/latest', async (req: Request, res: Response) => {
         console.groupCollapsed(['/api/mosaic/latest request']);
         try {
+            await authenticateKey(req);
             const fileName = await getMosaicForLatestSubmission();
             res.download(fileName);
             await rm(fileName);

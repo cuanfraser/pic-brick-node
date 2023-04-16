@@ -3,9 +3,9 @@ import Sharp from 'sharp';
 const processInputImage = async (img: Buffer): Promise<Buffer> => {
     const outputImg = Sharp(img, {})
         .sharpen()
-        .modulate({
-            brightness: 1.2,
-        })
+        // .modulate({
+        //     brightness: 1.2,
+        // })
         .withMetadata()
         .jpeg()
         .toBuffer();
