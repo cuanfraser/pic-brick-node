@@ -101,7 +101,7 @@ export const HEX_COLOUR_PALETTE = [
     '#E4BCA8',
     '#D1C098',
     '#202225',
-    // '#1E211B',
+    '#1E211B',
     '#24515D',
     '#76797B',
     '#F1CDB7',
