@@ -74,7 +74,8 @@ export const makeMosaic = async (
     const pixelArr = ctx.getImageData(0, 0, newWidth, newHeight).data;
 
     // Pixels per brick
-    const sampleSize = newWidth / widthBlocks;
+    const widthSampleSize = newWidth / widthBlocks;
+    const heightSampleSize = newHeight / heightBlocks;
 
     //Brick image
     const brickImageWidth = widthBlocks * BRICK_IMG_WIDTH_PIXELS;
@@ -84,28 +85,32 @@ export const makeMosaic = async (
 
     const hexToCount = new Map<string, number>();
 
+    // Find closest hex in palette for each brick
     for (let yBrick = 0; yBrick < heightBlocks; yBrick++) {
-        const yPixel = yBrick * sampleSize;
+        const yPixel = yBrick * heightSampleSize;
         for (let xBrick = 0; xBrick < widthBlocks; xBrick++) {
-            const xPixel = xBrick * sampleSize;
-            // 4 values per pixel (rgba)
-            const startingPixelIndex = (xPixel + yPixel * newWidth) * 4;
-            const endOfRow = (newWidth + yPixel * newWidth) * 4;
+            const xPixel = xBrick * widthSampleSize;
 
             // Average RGB vals over sample size
             //   Collect RGB values over sample size
             const rVals = [];
             const gVals = [];
             const bVals = [];
-            for (let i = startingPixelIndex; i < startingPixelIndex + sampleSize * 4 && i < endOfRow; i += 4) {
-                const r = pixelArr[i];
-                const g = pixelArr[i + 1];
-                const b = pixelArr[i + 2];
 
-                rVals.push(r);
-                gVals.push(g);
-                bVals.push(b);
+            for (let y = 0; y < heightSampleSize; y++) {
+                const startingPixelIndex = (xPixel + (yPixel + y) * newWidth) * 4;
+                const endOfRow = (newWidth + (yPixel + y) * newWidth) * 4;
+                for (let i = startingPixelIndex; i < startingPixelIndex + widthSampleSize * 4 && i < endOfRow; i += 4) {
+                    const r = pixelArr[i];
+                    const g = pixelArr[i + 1];
+                    const b = pixelArr[i + 2];
+    
+                    rVals.push(r);
+                    gVals.push(g);
+                    bVals.push(b);
+                }
             }
+            
             //   Average RGB vals
             const rAvg = Math.floor(rVals.reduce((acc, cur) => acc + cur) / rVals.length);
             const gAvg = Math.floor(gVals.reduce((acc, cur) => acc + cur) / gVals.length);
@@ -128,12 +133,12 @@ export const makeMosaic = async (
     });
 
     const hexToCountAfter = new Map<string, number>();
-    const instructions = new Array<Array<string>>(newHeight / sampleSize);
+    const instructions = new Array<Array<string>>(newHeight / widthSampleSize);
 
     // Build image on canvas
-    for (let y = 0; y < newHeight; y += sampleSize) {
-        const instructionsRow = new Array<string>(newWidth / sampleSize);
-        for (let x = 0; x < newWidth; x += sampleSize) {
+    for (let y = 0; y < newHeight; y += widthSampleSize) {
+        const instructionsRow = new Array<string>(newWidth / widthSampleSize);
+        for (let x = 0; x < newWidth; x += widthSampleSize) {
             const p = (x + y * newWidth) * 4;
 
             // Average RGB vals over sample size
@@ -141,7 +146,7 @@ export const makeMosaic = async (
             const rVals = [];
             const gVals = [];
             const bVals = [];
-            for (let i = p; i < p + sampleSize * 4; i += 4) {
+            for (let i = p; i < p + widthSampleSize * 4; i += 4) {
                 const r = pixelArr[i];
                 const g = pixelArr[i + 1];
                 const b = pixelArr[i + 2];
@@ -159,11 +164,11 @@ export const makeMosaic = async (
             const match = closestColourInPalette(rAvg, gAvg, bAvg, newPalette);
             const count = hexToCountAfter.get(match);
             hexToCountAfter.set(match, count ? count + 1 : 1);
-            instructionsRow[x / sampleSize] = match;
+            instructionsRow[x / widthSampleSize] = match;
 
-            brickImageCtx.drawImage(brickImgs[match], (x / sampleSize) * 32, (y / sampleSize) * 32);
+            brickImageCtx.drawImage(brickImgs[match], (x / widthSampleSize) * 32, (y / widthSampleSize) * 32);
         }
-        instructions[y / sampleSize] = instructionsRow;
+        instructions[y / widthSampleSize] = instructionsRow;
     }
 
     const imageOutput = brickImageCan.toBuffer('image/jpeg', { quality: 0.75 });
@@ -173,7 +178,7 @@ export const makeMosaic = async (
         hexToCountBefore: hexToCount,
         hexToCountAfter: hexToCountAfter,
         instructions: instructions,
-        sampleSize: sampleSize,
+        sampleSize: widthSampleSize,
     };
 
     console.timeEnd('makeMosaic');
