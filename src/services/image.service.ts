@@ -19,11 +19,11 @@ const processOutputImage = async (img: Buffer): Promise<Buffer> => {
     return outputImg;
 };
 
-const cropImageToBoardSize = (
+const cropImage = (
     widthBlocks: number,
     heightBlocks: number,
     originalWidth: number,
-    originalHeight: number
+    originalHeight: number,
 ): {
     newWidth: number;
     newHeight: number;
@@ -36,59 +36,28 @@ const cropImageToBoardSize = (
 
     console.log(`originalWidth: ${originalWidth} originalHeight: ${originalHeight}`);
 
-    // Crop to correct aspect ratio
-    const boardRatio = widthBlocks / heightBlocks;
-    const horizontalRatio = originalWidth / originalHeight;
-    const verticalRatio = originalHeight / originalWidth;
+    // Crop to correct board aspect ratio
+    const {
+        correctAspectRatioWidth,
+        correctAspectRatioHeight,
+        widthRemainingPixels,
+        heightRemainingPixels,
+        newWidthBlocks,
+        newHeightBlocks,
+    } = cropToBoardSize(widthBlocks, heightBlocks, originalWidth, originalHeight);
 
+    // Crop for equal number of pixels per brick
+
+    const widthRemainingPixelsBricksCrop = correctAspectRatioWidth % newWidthBlocks;
+    const heightRemainingPixelsBricksCrop = correctAspectRatioHeight % newHeightBlocks;
     console.log(
-        `boardRatio: ${boardRatio} horizontalRatio: ${horizontalRatio} verticalRatio: ${verticalRatio}`
+        `widthRemainingPixelsBricksCrop: ${widthRemainingPixelsBricksCrop} heightRemainingPixelsBricksCrop: ${heightRemainingPixelsBricksCrop}`,
     );
 
-    let cropW = 0;
-    let cropH = 0;
-    // landscape
-    if (originalWidth >= originalHeight) {
-        if (horizontalRatio > boardRatio) {
-            const neededWidth = originalHeight * boardRatio;
-            cropW = originalWidth - neededWidth;
-        } else {
-            const neededHeight = originalWidth / boardRatio;
-            cropH = originalHeight - neededHeight;
-        }
-    }
-    // vertical
-    else if (originalWidth < originalHeight) {
-        const temp = widthBlocks;
-        widthBlocks = heightBlocks;
-        heightBlocks = temp;
-        if (verticalRatio > boardRatio) {
-            const neededHeight = originalWidth * boardRatio;
-            cropH = originalHeight - neededHeight;
-        } else {
-            const neededWidth = originalHeight / boardRatio;
-            cropW = originalWidth - neededWidth;
-        }
-    }
-
-    cropW = Math.floor(cropW);
-    cropH = Math.floor(cropH);
-
-    const ratioCropWidth = originalWidth - cropW;
-    const ratioCropHeight = originalHeight - cropH;
-    console.log(`ratioCropWidth: ${ratioCropWidth} ratioCropHeight: ${ratioCropHeight}`);
-    console.log(`cropW: ${cropW} cropH: ${cropH}`);
-
-    const modCropW = ratioCropWidth % widthBlocks;
-    const modCropH = ratioCropHeight % heightBlocks;
-    console.log(`modCropW: ${modCropW} modCropH: ${modCropH}`);
-
-    const newWidth = ratioCropWidth - modCropW;
-    const newHeight = ratioCropHeight - modCropH;
-    const widthCrop = modCropW + cropW;
-    const heightCrop = modCropH + cropH;
-    const newWidthBlocks = widthBlocks;
-    const newHeightBlocks = heightBlocks;
+    const newWidth = correctAspectRatioWidth - widthRemainingPixelsBricksCrop;
+    const newHeight = correctAspectRatioHeight - heightRemainingPixelsBricksCrop;
+    const widthCrop = widthRemainingPixelsBricksCrop + widthRemainingPixels;
+    const heightCrop = heightRemainingPixelsBricksCrop + heightRemainingPixels;
     const output = { newWidth, newHeight, widthCrop, heightCrop, newWidthBlocks, newHeightBlocks };
     console.log('Crop Output: ');
     console.dir(output);
@@ -98,4 +67,80 @@ const cropImageToBoardSize = (
     return output;
 };
 
-export { cropImageToBoardSize, processInputImage, processOutputImage };
+// Get values to crop image to aspect ratio of board size
+const cropToBoardSize = (
+    widthBlocks: number,
+    heightBlocks: number,
+    originalWidth: number,
+    originalHeight: number,
+): {
+    correctAspectRatioWidth: number;
+    correctAspectRatioHeight: number;
+    widthRemainingPixels: number;
+    heightRemainingPixels: number;
+    newWidthBlocks: number;
+    newHeightBlocks: number;
+} => {
+    const boardSizeWidthToHeightRatio = widthBlocks / heightBlocks;
+    const imgWidthToHeightRatio = originalWidth / originalHeight;
+    const imgHeightToWidthRatio = originalHeight / originalWidth;
+
+    console.log(
+        `boardSizeWidthToHeightRatio: ${boardSizeWidthToHeightRatio} imgWidthToHeightRatio: ${imgWidthToHeightRatio} imgHeightToWidthRatio: ${imgHeightToWidthRatio}`,
+    );
+
+    let widthRemainingPixels = 0;
+    let heightRemainingPixels = 0;
+    let newWidthBlocks = widthBlocks;
+    let newHeightBlocks = heightBlocks;
+    // original image is landscape
+    if (originalWidth >= originalHeight) {
+        // original image is wider than needed
+        if (imgWidthToHeightRatio > boardSizeWidthToHeightRatio) {
+            const neededWidth = originalHeight * boardSizeWidthToHeightRatio;
+            widthRemainingPixels = originalWidth - neededWidth;
+            // original image is taller than needed
+        } else {
+            const neededHeight = originalWidth / boardSizeWidthToHeightRatio;
+            heightRemainingPixels = originalHeight - neededHeight;
+        }
+    }
+    // original image is vertical
+    else {
+        newWidthBlocks = heightBlocks;
+        newHeightBlocks = widthBlocks;
+        // original image is taller than needed
+        if (imgHeightToWidthRatio > boardSizeWidthToHeightRatio) {
+            const neededHeight = originalWidth * boardSizeWidthToHeightRatio;
+            heightRemainingPixels = originalHeight - neededHeight;
+            // original image is wider than needed
+        } else {
+            const neededWidth = originalHeight / boardSizeWidthToHeightRatio;
+            widthRemainingPixels = originalWidth - neededWidth;
+        }
+    }
+
+    widthRemainingPixels = Math.floor(widthRemainingPixels);
+    heightRemainingPixels = Math.floor(heightRemainingPixels);
+
+    const correctAspectRatioWidth = originalWidth - widthRemainingPixels;
+    const correctAspectRatioHeight = originalHeight - heightRemainingPixels;
+
+    console.log(
+        `correctAspectRatioWidth: ${correctAspectRatioWidth} correctAspectRatioHeight: ${correctAspectRatioHeight}`,
+    );
+    console.log(
+        `widthRemainingPixels: ${widthRemainingPixels} heightRemainingPixels: ${heightRemainingPixels}`,
+    );
+
+    return {
+        correctAspectRatioWidth,
+        correctAspectRatioHeight,
+        widthRemainingPixels,
+        heightRemainingPixels,
+        newWidthBlocks,
+        newHeightBlocks,
+    };
+};
+
+export { cropImage as cropImageToBoardSize, processInputImage, processOutputImage };
