@@ -54,6 +54,7 @@ const cropImage = (
         `widthRemainingPixelsBricksCrop: ${widthRemainingPixelsBricksCrop} heightRemainingPixelsBricksCrop: ${heightRemainingPixelsBricksCrop}`,
     );
 
+    // Total crop
     const newWidth = correctAspectRatioWidth - widthRemainingPixelsBricksCrop;
     const newHeight = correctAspectRatioHeight - heightRemainingPixelsBricksCrop;
     const widthCrop = widthRemainingPixelsBricksCrop + widthRemainingPixels;

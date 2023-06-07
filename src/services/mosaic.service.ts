@@ -73,6 +73,7 @@ export const makeMosaic = async (
     // Get pixel array where each pixel is 4 slots (RGBA)
     const pixelArr = ctx.getImageData(0, 0, newWidth, newHeight).data;
 
+    // Pixels per brick
     const sampleSize = newWidth / widthBlocks;
 
     //Brick image
@@ -83,16 +84,20 @@ export const makeMosaic = async (
 
     const hexToCount = new Map<string, number>();
 
-    for (let y = 0; y < newHeight; y += sampleSize) {
-        for (let x = 0; x < newWidth; x += sampleSize) {
-            const p = (x + y * newWidth) * 4;
+    for (let yBrick = 0; yBrick < heightBlocks; yBrick++) {
+        const yPixel = yBrick * sampleSize;
+        for (let xBrick = 0; xBrick < widthBlocks; xBrick++) {
+            const xPixel = xBrick * sampleSize;
+            // 4 values per pixel (rgba)
+            const startingPixelIndex = (xPixel + yPixel * newWidth) * 4;
+            const endOfRow = (newWidth + yPixel * newWidth) * 4;
 
             // Average RGB vals over sample size
             //   Collect RGB values over sample size
             const rVals = [];
             const gVals = [];
             const bVals = [];
-            for (let i = p; i < p + sampleSize * 4; i += 4) {
+            for (let i = startingPixelIndex; i < startingPixelIndex + sampleSize * 4 && i < endOfRow; i += 4) {
                 const r = pixelArr[i];
                 const g = pixelArr[i + 1];
                 const b = pixelArr[i + 2];
