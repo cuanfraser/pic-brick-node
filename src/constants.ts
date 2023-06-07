@@ -52,6 +52,8 @@ export const REMOVE_BG_URL = 'https://api.remove.bg/v1.0/removebg';
 export const REMOVE_BG_API_KEY = process.env.REMOVE_BG_API_KEY;
 
 export const MIN_HEX_COUNT = 10;
+export const BRICK_IMG_HEIGHT_PIXELS = 32;
+export const BRICK_IMG_WIDTH_PIXELS = 32;
 
 export const HEX_COLOUR_PALETTE = [
     '#DF291E',

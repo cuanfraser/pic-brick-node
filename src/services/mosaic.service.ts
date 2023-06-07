@@ -1,5 +1,5 @@
 import Canvas from 'canvas';
-import { HEX_COLOUR_PALETTE, MIN_HEX_COUNT } from '../constants.js';
+import { BRICK_IMG_HEIGHT_PIXELS, BRICK_IMG_WIDTH_PIXELS, HEX_COLOUR_PALETTE, MIN_HEX_COUNT } from '../constants.js';
 import { cropImageToBoardSize } from './image.service.js';
 import nearestColour from 'nearest-color';
 import { JotformSubmissionModel } from '../models/jotform-submission/jotform-submission.model.js';
@@ -76,8 +76,8 @@ export const makeMosaic = async (
     const sampleSize = newWidth / widthBlocks;
 
     //Brick image
-    const brickImageWidth = widthBlocks * 32;
-    const brickImageHeight = heightBlocks * 32;
+    const brickImageWidth = widthBlocks * BRICK_IMG_WIDTH_PIXELS;
+    const brickImageHeight = heightBlocks * BRICK_IMG_HEIGHT_PIXELS;
     const brickImageCan = Canvas.createCanvas(brickImageWidth, brickImageHeight);
     const brickImageCtx = brickImageCan.getContext('2d');
 
