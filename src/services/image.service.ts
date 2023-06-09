@@ -1,6 +1,6 @@
 import Sharp from 'sharp';
 
-const processInputImage = async (img: Buffer): Promise<Buffer> => {
+export const processInputImage = async (img: Buffer): Promise<Buffer> => {
     const outputImg = Sharp(img, {})
         .sharpen()
         // .modulate({
@@ -13,89 +13,97 @@ const processInputImage = async (img: Buffer): Promise<Buffer> => {
     return outputImg;
 };
 
-const processOutputImage = async (img: Buffer): Promise<Buffer> => {
+export const processOutputImage = async (img: Buffer): Promise<Buffer> => {
     const outputImg = Sharp(img, {}).withMetadata().jpeg().toBuffer();
 
     return outputImg;
 };
 
-const cropImageToBoardSize = (
+// Get values to crop image to aspect ratio of board size
+export const cropToBoardSize = (
     widthBlocks: number,
     heightBlocks: number,
     originalWidth: number,
-    originalHeight: number
+    originalHeight: number,
 ): {
-    newWidth: number;
-    newHeight: number;
+    correctAspectRatioWidth: number;
+    correctAspectRatioHeight: number;
     widthCrop: number;
     heightCrop: number;
     newWidthBlocks: number;
     newHeightBlocks: number;
 } => {
     console.groupCollapsed(['Crop Image']);
-
-    console.log(`originalWidth: ${originalWidth} originalHeight: ${originalHeight}`);
-
-    // Crop to correct aspect ratio
-    const boardRatio = widthBlocks / heightBlocks;
-    const horizontalRatio = originalWidth / originalHeight;
-    const verticalRatio = originalHeight / originalWidth;
+    const boardSizeWidthToHeightRatio = widthBlocks / heightBlocks;
+    const imgWidthToHeightRatio = originalWidth / originalHeight;
+    const imgHeightToWidthRatio = originalHeight / originalWidth;
 
     console.log(
-        `boardRatio: ${boardRatio} horizontalRatio: ${horizontalRatio} verticalRatio: ${verticalRatio}`
+        `boardSizeWidthToHeightRatio: ${boardSizeWidthToHeightRatio} imgWidthToHeightRatio: ${imgWidthToHeightRatio} imgHeightToWidthRatio: ${imgHeightToWidthRatio}`,
     );
 
-    let cropW = 0;
-    let cropH = 0;
-    // landscape
+    let widthRemainingPixels = 0;
+    let heightRemainingPixels = 0;
+    let newWidthBlocks = widthBlocks;
+    let newHeightBlocks = heightBlocks;
+    // original image is landscape
     if (originalWidth >= originalHeight) {
-        if (horizontalRatio > boardRatio) {
-            const neededWidth = originalHeight * boardRatio;
-            cropW = originalWidth - neededWidth;
+        // original image is wider than needed
+        if (imgWidthToHeightRatio > boardSizeWidthToHeightRatio) {
+            const neededWidth = originalHeight * boardSizeWidthToHeightRatio;
+            widthRemainingPixels = originalWidth - neededWidth;
+            // original image is taller than needed
         } else {
-            const neededHeight = originalWidth / boardRatio;
-            cropH = originalHeight - neededHeight;
+            const neededHeight = originalWidth / boardSizeWidthToHeightRatio;
+            heightRemainingPixels = originalHeight - neededHeight;
         }
     }
-    // vertical
-    else if (originalWidth < originalHeight) {
-        const temp = widthBlocks;
-        widthBlocks = heightBlocks;
-        heightBlocks = temp;
-        if (verticalRatio > boardRatio) {
-            const neededHeight = originalWidth * boardRatio;
-            cropH = originalHeight - neededHeight;
+    // original image is vertical
+    else {
+        newWidthBlocks = heightBlocks;
+        newHeightBlocks = widthBlocks;
+        // original image is taller than needed
+        if (imgHeightToWidthRatio > boardSizeWidthToHeightRatio) {
+            const neededHeight = originalWidth * boardSizeWidthToHeightRatio;
+            heightRemainingPixels = originalHeight - neededHeight;
+            // original image is wider than needed
         } else {
-            const neededWidth = originalHeight / boardRatio;
-            cropW = originalWidth - neededWidth;
+            const neededWidth = originalHeight / boardSizeWidthToHeightRatio;
+            widthRemainingPixels = originalWidth - neededWidth;
         }
     }
 
-    cropW = Math.floor(cropW);
-    cropH = Math.floor(cropH);
+    widthRemainingPixels = Math.floor(widthRemainingPixels);
+    heightRemainingPixels = Math.floor(heightRemainingPixels);
 
-    const ratioCropWidth = originalWidth - cropW;
-    const ratioCropHeight = originalHeight - cropH;
-    console.log(`ratioCropWidth: ${ratioCropWidth} ratioCropHeight: ${ratioCropHeight}`);
-    console.log(`cropW: ${cropW} cropH: ${cropH}`);
+    const correctAspectRatioWidth = originalWidth - widthRemainingPixels;
+    const correctAspectRatioHeight = originalHeight - heightRemainingPixels;
 
-    const modCropW = ratioCropWidth % widthBlocks;
-    const modCropH = ratioCropHeight % heightBlocks;
-    console.log(`modCropW: ${modCropW} modCropH: ${modCropH}`);
-
-    const newWidth = ratioCropWidth - modCropW;
-    const newHeight = ratioCropHeight - modCropH;
-    const widthCrop = modCropW + cropW;
-    const heightCrop = modCropH + cropH;
-    const newWidthBlocks = widthBlocks;
-    const newHeightBlocks = heightBlocks;
-    const output = { newWidth, newHeight, widthCrop, heightCrop, newWidthBlocks, newHeightBlocks };
-    console.log('Crop Output: ');
-    console.dir(output);
+    console.log(
+        `correctAspectRatioWidth: ${correctAspectRatioWidth} correctAspectRatioHeight: ${correctAspectRatioHeight}`,
+    );
+    console.log(
+        `widthRemainingPixels: ${widthRemainingPixels} heightRemainingPixels: ${heightRemainingPixels}`,
+    );
 
     console.groupEnd();
 
-    return output;
+    return {
+        correctAspectRatioWidth,
+        correctAspectRatioHeight,
+        widthCrop: widthRemainingPixels,
+        heightCrop: heightRemainingPixels,
+        newWidthBlocks,
+        newHeightBlocks,
+    };
 };
 
-export { cropImageToBoardSize, processInputImage, processOutputImage };
+export const getPixelForCoords = (
+    column: number,
+    row: number,
+    imageWidth: number,
+    pixelArr: Uint8ClampedArray,
+): { r: number; g: number; b: number } => {
+    const index = (column + row * imageWidth) * 4;
+    return { r: pixelArr[index], g: pixelArr[index + 1], b: pixelArr[index + 2] };
+};
