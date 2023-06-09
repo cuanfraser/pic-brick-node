@@ -93,6 +93,9 @@ export const makeMosaic = async (
     // or use less pixels on last bricks
     const widthSampleSize = newWidth / widthBlocks;
     const heightSampleSize = newHeight / heightBlocks;
+    if (widthSampleSize < 1 || heightSampleSize < 1) {
+        throw new Error(`Sample size is too small, please use a higher quality image.`);
+    }
 
     // Find closest hex in palette for each brick
     for (let brickRow = 0; brickRow < heightBlocks; brickRow++) {
