@@ -141,7 +141,7 @@ export const makeMosaic = async (
             hexToCount.set(match, count ? count + 1 : 1);
             instructionsRow[brickCol] = match;
 
-            brickImageCtx.drawImage(brickImgs[match], brickCol * 32, brickRow * 32);
+            brickImageCtx.drawImage(brickImgs[match], brickCol * BRICK_IMG_WIDTH_PIXELS, brickRow * BRICK_IMG_HEIGHT_PIXELS);
         }
         instructions[brickRow] = instructionsRow;
     }
