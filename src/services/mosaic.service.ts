@@ -1,6 +1,11 @@
 import Canvas from 'canvas';
-import { BRICK_IMG_HEIGHT_PIXELS, BRICK_IMG_WIDTH_PIXELS, HEX_COLOUR_PALETTE, MIN_HEX_COUNT } from '../constants.js';
-import { cropImageToBoardSize } from './image.service.js';
+import {
+    BRICK_IMG_HEIGHT_PIXELS,
+    BRICK_IMG_WIDTH_PIXELS,
+    HEX_COLOUR_PALETTE,
+    MIN_HEX_COUNT,
+} from '../constants.js';
+import { cropImageToBoardSize, getPixelForCoords } from './image.service.js';
 import nearestColour from 'nearest-color';
 import { JotformSubmissionModel } from '../models/jotform-submission/jotform-submission.model.js';
 import { IMosaic } from '../models/mosaic/mosaic.schema.js';
@@ -26,6 +31,9 @@ export const closestColourInPalette = (
     palette: string[],
 ): string => {
     const matcher = nearestColour.from(palette);
+    if (Number.isNaN(r)) {
+        console.log('TEST');
+    }
     return matcher(`rgb(${r}, ${g}, ${b})`);
 };
 
@@ -49,8 +57,16 @@ export const makeMosaic = async (
     const img = await Canvas.loadImage(src);
 
     // Get cropped values
-    const { newWidth, newHeight, widthCrop, heightCrop, newWidthBlocks, newHeightBlocks } =
-        cropImageToBoardSize(widthBlocks, heightBlocks, img.width, img.height);
+    const {
+        newWidth,
+        newHeight,
+        widthCrop,
+        heightCrop,
+        newWidthBlocks,
+        newHeightBlocks,
+        widthSampleSize,
+        heightSampleSize,
+    } = cropImageToBoardSize(widthBlocks, heightBlocks, img.width, img.height);
     // Rotation swaps these
     widthBlocks = newWidthBlocks;
     heightBlocks = newHeightBlocks;
@@ -73,10 +89,6 @@ export const makeMosaic = async (
     // Get pixel array where each pixel is 4 slots (RGBA)
     const pixelArr = ctx.getImageData(0, 0, newWidth, newHeight).data;
 
-    // Pixels per brick
-    const widthSampleSize = newWidth / widthBlocks;
-    const heightSampleSize = newHeight / heightBlocks;
-
     //Brick image
     const brickImageWidth = widthBlocks * BRICK_IMG_WIDTH_PIXELS;
     const brickImageHeight = heightBlocks * BRICK_IMG_HEIGHT_PIXELS;
@@ -86,38 +98,17 @@ export const makeMosaic = async (
     const hexToCount = new Map<string, number>();
 
     // Find closest hex in palette for each brick
-    for (let yBrick = 0; yBrick < heightBlocks; yBrick++) {
-        const yPixel = yBrick * heightSampleSize;
-        for (let xBrick = 0; xBrick < widthBlocks; xBrick++) {
-            const xPixel = xBrick * widthSampleSize;
-
-            // Average RGB vals over sample size
-            //   Collect RGB values over sample size
-            const rVals = [];
-            const gVals = [];
-            const bVals = [];
-
-            for (let y = 0; y < heightSampleSize; y++) {
-                const startingPixelIndex = (xPixel + (yPixel + y) * newWidth) * 4;
-                const endOfRow = (newWidth + (yPixel + y) * newWidth) * 4;
-                for (let i = startingPixelIndex; i < startingPixelIndex + widthSampleSize * 4 && i < endOfRow; i += 4) {
-                    const r = pixelArr[i];
-                    const g = pixelArr[i + 1];
-                    const b = pixelArr[i + 2];
-    
-                    rVals.push(r);
-                    gVals.push(g);
-                    bVals.push(b);
-                }
-            }
-            
-            //   Average RGB vals
-            const rAvg = Math.floor(rVals.reduce((acc, cur) => acc + cur) / rVals.length);
-            const gAvg = Math.floor(gVals.reduce((acc, cur) => acc + cur) / gVals.length);
-            const bAvg = Math.floor(bVals.reduce((acc, cur) => acc + cur) / bVals.length);
-
-            // Find closest RGB colour in palette
-            const match = closestColourInPalette(rAvg, gAvg, bAvg, HEX_COLOUR_PALETTE);
+    for (let brickRow = 0; brickRow < heightBlocks; brickRow++) {
+        for (let brickCol = 0; brickCol < widthBlocks; brickCol++) {
+            const match = getColourMatchForSample(
+                brickRow,
+                brickCol,
+                heightSampleSize,
+                widthSampleSize,
+                newWidth,
+                pixelArr,
+                HEX_COLOUR_PALETTE,
+            );
             const count = hexToCount.get(match);
             hexToCount.set(match, count ? count + 1 : 1);
         }
@@ -133,42 +124,29 @@ export const makeMosaic = async (
     });
 
     const hexToCountAfter = new Map<string, number>();
-    const instructions = new Array<Array<string>>(newHeight / widthSampleSize);
+    const instructions = new Array<Array<string>>(heightBlocks);
 
     // Build image on canvas
-    for (let y = 0; y < newHeight; y += widthSampleSize) {
-        const instructionsRow = new Array<string>(newWidth / widthSampleSize);
-        for (let x = 0; x < newWidth; x += widthSampleSize) {
-            const p = (x + y * newWidth) * 4;
+    for (let brickRow = 0; brickRow < heightBlocks; brickRow++) {
+        const instructionsRow = new Array<string>(widthBlocks);
+        
+        for (let brickCol = 0; brickCol < widthBlocks; brickCol++) {
+            const match = getColourMatchForSample(
+                brickRow,
+                brickCol,
+                heightSampleSize,
+                widthSampleSize,
+                newWidth,
+                pixelArr,
+                newPalette,
+            );
+            const count = hexToCount.get(match);
+            hexToCount.set(match, count ? count + 1 : 1);
+            instructionsRow[brickCol] = match;
 
-            // Average RGB vals over sample size
-            //   Collect RGB values over sample size
-            const rVals = [];
-            const gVals = [];
-            const bVals = [];
-            for (let i = p; i < p + widthSampleSize * 4; i += 4) {
-                const r = pixelArr[i];
-                const g = pixelArr[i + 1];
-                const b = pixelArr[i + 2];
-
-                rVals.push(r);
-                gVals.push(g);
-                bVals.push(b);
-            }
-            //   Average RGB vals
-            const rAvg = Math.floor(rVals.reduce((acc, cur) => acc + cur) / rVals.length);
-            const gAvg = Math.floor(gVals.reduce((acc, cur) => acc + cur) / gVals.length);
-            const bAvg = Math.floor(bVals.reduce((acc, cur) => acc + cur) / bVals.length);
-
-            // Find closest RGB colour in palette
-            const match = closestColourInPalette(rAvg, gAvg, bAvg, newPalette);
-            const count = hexToCountAfter.get(match);
-            hexToCountAfter.set(match, count ? count + 1 : 1);
-            instructionsRow[x / widthSampleSize] = match;
-
-            brickImageCtx.drawImage(brickImgs[match], (x / widthSampleSize) * 32, (y / widthSampleSize) * 32);
+            brickImageCtx.drawImage(brickImgs[match], brickCol * 32, brickRow * 32);
         }
-        instructions[y / widthSampleSize] = instructionsRow;
+        instructions[brickRow] = instructionsRow;
     }
 
     const imageOutput = brickImageCan.toBuffer('image/jpeg', { quality: 0.75 });
@@ -205,13 +183,73 @@ export const getMosaicForSubmission = async (id: string): Promise<string> => {
 };
 
 export const getMosaicForLatestSubmission = async (): Promise<string> => {
-    const latestSubmission = await JotformSubmissionModel.findOne(
-        {},
-        {},
-        { sort: { date: -1 } },
-    );
+    const latestSubmission = await JotformSubmissionModel.findOne({}, {}, { sort: { date: -1 } });
     if (!latestSubmission) {
         throw new Error('No submissions found');
     }
     return getMosaicForSubmission(latestSubmission.submissionId);
+};
+
+const getColourMatchForSample = (
+    brickRow: number,
+    brickCol: number,
+    heightSampleSize: number,
+    widthSampleSize: number,
+    imageWidth: number,
+    pixelArr: Uint8ClampedArray,
+    hexColourPalette: string[],
+): string => {
+    const pixelsOriginCol = brickCol * widthSampleSize;
+    const pixelsEndCol = pixelsOriginCol + widthSampleSize;
+    const pixelsOriginRow = brickRow * heightSampleSize;
+    const pixelsEndRow = pixelsOriginRow + heightSampleSize;
+
+    // Average RGB vals over sample size
+    //   Collect RGB values over sample size
+    const rVals = [];
+    const gVals = [];
+    const bVals = [];
+
+    const fracFirstColumn = 1 - (pixelsOriginCol % 1);
+    const fracLastColumn = pixelsEndCol % 1;
+
+    // Loop through the vertical pixel indices for the sample box
+    for (let row = Math.floor(pixelsOriginRow); row < pixelsEndRow; row++) {
+        // Loop through the pixels for this row in the sample box
+        for (let col = Math.floor(pixelsOriginCol); col < pixelsEndCol; col++) {
+            const pixelRgb = getPixelForCoords(
+                Math.floor(col),
+                Math.floor(row),
+                imageWidth,
+                pixelArr,
+            );
+
+            let fractionOfPixel = 1;
+            if (col == Math.floor(pixelsOriginCol)) {
+                fractionOfPixel = fractionOfPixel * fracFirstColumn;
+            } else if (col + 1 >= pixelsEndCol) {
+                fractionOfPixel = fractionOfPixel * fracLastColumn;
+            }
+
+            if (row == Math.floor(pixelsOriginRow)) {
+                fractionOfPixel = fractionOfPixel * (1 - (pixelsOriginRow % 1));
+            } else if (row + 1 >= pixelsEndRow) {
+                fractionOfPixel = fractionOfPixel * (pixelsEndRow % 1);
+            }
+
+            const weight = fractionOfPixel / (widthSampleSize * heightSampleSize);
+            rVals.push({ value: pixelRgb.r, weight: weight });
+            gVals.push({ value: pixelRgb.g, weight: weight });
+            bVals.push({ value: pixelRgb.b, weight: weight });
+        }
+    }
+
+    //   Average RGB vals
+    const rAvg = Math.floor(rVals.reduce((acc, cur) => acc + cur.value * cur.weight, 0));
+    const gAvg = Math.floor(gVals.reduce((acc, cur) => acc + cur.value * cur.weight, 0));
+    const bAvg = Math.floor(bVals.reduce((acc, cur) => acc + cur.value * cur.weight, 0));
+
+    // Find closest RGB colour in palette
+    const match = closestColourInPalette(rAvg, gAvg, bAvg, hexColourPalette);
+    return match;
 };

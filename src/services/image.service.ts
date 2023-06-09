@@ -31,6 +31,8 @@ const cropImage = (
     heightCrop: number;
     newWidthBlocks: number;
     newHeightBlocks: number;
+    widthSampleSize: number;
+    heightSampleSize: number;
 } => {
     console.groupCollapsed(['Crop Image']);
 
@@ -47,19 +49,25 @@ const cropImage = (
     } = cropToBoardSize(widthBlocks, heightBlocks, originalWidth, originalHeight);
 
     // Crop for equal number of pixels per brick
-
-    const widthRemainingPixelsBricksCrop = correctAspectRatioWidth % newWidthBlocks;
-    const heightRemainingPixelsBricksCrop = correctAspectRatioHeight % newHeightBlocks;
-    console.log(
-        `widthRemainingPixelsBricksCrop: ${widthRemainingPixelsBricksCrop} heightRemainingPixelsBricksCrop: ${heightRemainingPixelsBricksCrop}`,
-    );
+    // or use less pixels on last bricks
+    const widthSampleSize = correctAspectRatioWidth / newWidthBlocks;
+    const heightSampleSize = correctAspectRatioHeight / newHeightBlocks;
 
     // Total crop
-    const newWidth = correctAspectRatioWidth - widthRemainingPixelsBricksCrop;
-    const newHeight = correctAspectRatioHeight - heightRemainingPixelsBricksCrop;
-    const widthCrop = widthRemainingPixelsBricksCrop + widthRemainingPixels;
-    const heightCrop = heightRemainingPixelsBricksCrop + heightRemainingPixels;
-    const output = { newWidth, newHeight, widthCrop, heightCrop, newWidthBlocks, newHeightBlocks };
+    const newWidth = correctAspectRatioWidth;
+    const newHeight = correctAspectRatioHeight;
+    const widthCrop = widthRemainingPixels;
+    const heightCrop = heightRemainingPixels;
+    const output = {
+        newWidth,
+        newHeight,
+        widthCrop,
+        heightCrop,
+        newWidthBlocks,
+        newHeightBlocks,
+        widthSampleSize,
+        heightSampleSize,
+    };
     console.log('Crop Output: ');
     console.dir(output);
 
@@ -142,6 +150,16 @@ const cropToBoardSize = (
         newWidthBlocks,
         newHeightBlocks,
     };
+};
+
+export const getPixelForCoords = (
+    column: number,
+    row: number,
+    imageWidth: number,
+    pixelArr: Uint8ClampedArray,
+): { r: number; g: number; b: number } => {
+    const index = (column + row * imageWidth) * 4;
+    return { r: pixelArr[index], g: pixelArr[index], b: pixelArr[index] };
 };
 
 export { cropImage as cropImageToBoardSize, processInputImage, processOutputImage };

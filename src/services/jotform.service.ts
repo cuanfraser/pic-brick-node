@@ -90,11 +90,9 @@ export const makeMosaicFromJotForm = async (
         }
     }
 
-    // Calculate Sample Size based on Physical Size
     const boardSize = jotformSubmission.size;
     let widthBlocks = 64;
     let heightBlocks = 64;
-    // Sample Size = (Res / Blocks #)
     if (boardSize.startsWith(JOTFORM_SMALL_TEXT)) {
         widthBlocks = 64;
         heightBlocks = 64;
