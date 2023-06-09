@@ -118,7 +118,7 @@ export const makeMosaic = async (
     // New Palette excluding Hex colours with less than chosen amount
     const newPalette = HEX_COLOUR_PALETTE.filter((hex) => {
         let count = hexToCount.get(hex);
-        if (count == undefined) {
+        if (count === undefined) {
             count = 0;
         }
         return count > MIN_HEX_COUNT;
@@ -225,13 +225,13 @@ const getColourMatchForSample = (
             );
 
             let fractionOfPixel = 1;
-            if (col == Math.floor(pixelsOriginCol)) {
+            if (col === Math.floor(pixelsOriginCol)) {
                 fractionOfPixel = fractionOfPixel * (1 - (pixelsOriginCol % 1));
             } else if (col + 1 > pixelsEndCol) {
                 fractionOfPixel = fractionOfPixel * (pixelsEndCol % 1);
             }
 
-            if (row == Math.floor(pixelsOriginRow)) {
+            if (row === Math.floor(pixelsOriginRow)) {
                 fractionOfPixel = fractionOfPixel * (1 - (pixelsOriginRow % 1));
             } else if (row + 1 > pixelsEndRow) {
                 fractionOfPixel = fractionOfPixel * (pixelsEndRow % 1);
