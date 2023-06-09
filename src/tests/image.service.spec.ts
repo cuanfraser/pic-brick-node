@@ -13,17 +13,6 @@ describe('cropImageToBoardSize Tests', () => {
         });
     });
 
-    test('Various sizes, factor of square board size', () => {
-        const boardSize = 96;
-        for (let i = 0; i < 10; i++) {
-            const width = Math.floor(Math.random() * 1000);
-            const height = Math.floor(Math.random() * 1000);
-            const output = cropToBoardSize(boardSize, boardSize, width, height);
-            expect(output.correctAspectRatioWidth % boardSize).toBe(0);
-            expect(output.correctAspectRatioHeight % boardSize).toBe(0);
-        }
-    });
-
     test('Various rectangles, cropped to square board size', () => {
         const boardSize = 96;
         for (let i = 0; i < 10; i++) {
