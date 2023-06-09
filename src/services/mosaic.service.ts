@@ -103,6 +103,7 @@ export const makeMosaic = async (
                 heightSampleSize,
                 widthSampleSize,
                 newWidth,
+                newHeight,
                 pixelArr,
                 HEX_COLOUR_PALETTE,
             );
@@ -134,6 +135,7 @@ export const makeMosaic = async (
                 heightSampleSize,
                 widthSampleSize,
                 newWidth,
+                newHeight,
                 pixelArr,
                 newPalette,
             );
@@ -193,6 +195,7 @@ const getColourMatchForSample = (
     heightSampleSize: number,
     widthSampleSize: number,
     imageWidth: number,
+    imageHeight: number,
     pixelArr: Uint8ClampedArray,
     hexColourPalette: string[],
 ): string => {
@@ -207,13 +210,10 @@ const getColourMatchForSample = (
     const gVals = [];
     const bVals = [];
 
-    const fracFirstColumn = 1 - (pixelsOriginCol % 1);
-    const fracLastColumn = pixelsEndCol % 1;
-
     // Loop through the vertical pixel indices for the sample box
-    for (let row = Math.floor(pixelsOriginRow); row < pixelsEndRow; row++) {
+    for (let row = Math.floor(pixelsOriginRow); row <= pixelsEndRow && row < imageHeight; row++) {
         // Loop through the pixels for this row in the sample box
-        for (let col = Math.floor(pixelsOriginCol); col < pixelsEndCol; col++) {
+        for (let col = Math.floor(pixelsOriginCol); col <= pixelsEndCol && col < imageWidth; col++) {
             const pixelRgb = getPixelForCoords(
                 Math.floor(col),
                 Math.floor(row),
@@ -222,25 +222,37 @@ const getColourMatchForSample = (
             );
 
             let fractionOfPixel = 1;
+            let colStart = false;
+            let colEnd = false;
+            let rowStart = false;
+            let rowEnd = false;
             if (col == Math.floor(pixelsOriginCol)) {
-                fractionOfPixel = fractionOfPixel * fracFirstColumn;
-            } else if (col + 1 >= pixelsEndCol) {
-                fractionOfPixel = fractionOfPixel * fracLastColumn;
+                colStart = true;
+                fractionOfPixel = fractionOfPixel * (1 - (pixelsOriginCol % 1));
+            } else if (col + 1 > pixelsEndCol) {
+                colEnd = true;
+                fractionOfPixel = fractionOfPixel * (pixelsEndCol % 1);
             }
 
             if (row == Math.floor(pixelsOriginRow)) {
+                rowStart = true;
                 fractionOfPixel = fractionOfPixel * (1 - (pixelsOriginRow % 1));
-            } else if (row + 1 >= pixelsEndRow) {
+            } else if (row + 1 > pixelsEndRow) {
+                rowEnd = true;
                 fractionOfPixel = fractionOfPixel * (pixelsEndRow % 1);
             }
 
             const weight = fractionOfPixel / (widthSampleSize * heightSampleSize);
+            if (isNaN(pixelRgb.r)) {
+                console.log("BROKEN");
+            }
             rVals.push({ value: pixelRgb.r, weight: weight });
             gVals.push({ value: pixelRgb.g, weight: weight });
             bVals.push({ value: pixelRgb.b, weight: weight });
         }
     }
 
+    const totalWeightsR = rVals.reduce((acc, cur) => acc + cur.weight, 0);
     //   Average RGB vals
     const rAvg = Math.floor(rVals.reduce((acc, cur) => acc + cur.value * cur.weight, 0));
     const gAvg = Math.floor(gVals.reduce((acc, cur) => acc + cur.value * cur.weight, 0));
