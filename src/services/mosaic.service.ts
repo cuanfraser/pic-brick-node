@@ -5,7 +5,7 @@ import {
     HEX_COLOUR_PALETTE,
     MIN_HEX_COUNT,
 } from '../constants.js';
-import { cropImageToBoardSize, getPixelForCoords } from './image.service.js';
+import { cropToBoardSize, getPixelForCoords } from './image.service.js';
 import nearestColour from 'nearest-color';
 import { JotformSubmissionModel } from '../models/jotform-submission/jotform-submission.model.js';
 import { IMosaic } from '../models/mosaic/mosaic.schema.js';
@@ -31,9 +31,6 @@ export const closestColourInPalette = (
     palette: string[],
 ): string => {
     const matcher = nearestColour.from(palette);
-    if (Number.isNaN(r)) {
-        console.log('TEST');
-    }
     return matcher(`rgb(${r}, ${g}, ${b})`);
 };
 
@@ -56,20 +53,15 @@ export const makeMosaic = async (
 
     const img = await Canvas.loadImage(src);
 
-    // Get cropped values
-    const {
-        newWidth,
-        newHeight,
-        widthCrop,
-        heightCrop,
-        newWidthBlocks,
-        newHeightBlocks,
-        widthSampleSize,
-        heightSampleSize,
-    } = cropImageToBoardSize(widthBlocks, heightBlocks, img.width, img.height);
+    // Crop to correct board aspect ratio
+    const cropValues = cropToBoardSize(widthBlocks, heightBlocks, img.width, img.height);
+    const widthCrop = cropValues.widthCrop;
+    const heightCrop = cropValues.heightCrop;
+    const newWidth = cropValues.correctAspectRatioWidth;
+    const newHeight = cropValues.correctAspectRatioHeight;
     // Rotation swaps these
-    widthBlocks = newWidthBlocks;
-    heightBlocks = newHeightBlocks;
+    widthBlocks = cropValues.newWidthBlocks;
+    heightBlocks = cropValues.newHeightBlocks;
 
     // Create Canvas to draw cropped image on to analyze colours
     const can = Canvas.createCanvas(newWidth, newHeight);
@@ -96,6 +88,11 @@ export const makeMosaic = async (
     const brickImageCtx = brickImageCan.getContext('2d');
 
     const hexToCount = new Map<string, number>();
+
+    // Crop for equal number of pixels per brick
+    // or use less pixels on last bricks
+    const widthSampleSize = newWidth / widthBlocks;
+    const heightSampleSize = newHeight / heightBlocks;
 
     // Find closest hex in palette for each brick
     for (let brickRow = 0; brickRow < heightBlocks; brickRow++) {
@@ -129,7 +126,7 @@ export const makeMosaic = async (
     // Build image on canvas
     for (let brickRow = 0; brickRow < heightBlocks; brickRow++) {
         const instructionsRow = new Array<string>(widthBlocks);
-        
+
         for (let brickCol = 0; brickCol < widthBlocks; brickCol++) {
             const match = getColourMatchForSample(
                 brickRow,

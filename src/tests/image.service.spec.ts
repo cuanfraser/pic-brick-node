@@ -1,11 +1,11 @@
-import { cropImageToBoardSize } from '../services/image.service.js';
+import { cropToBoardSize } from '../services/image.service.js';
 
 describe('cropImageToBoardSize Tests', () => {
-    test('No crop on perfect square with no mod', () => {
-        const output = cropImageToBoardSize(96, 96, 480, 480);
+    test('No crop on perfect square', () => {
+        const output = cropToBoardSize(96, 96, 480, 480);
         expect(output).toEqual({
-            newWidth: 480,
-            newHeight: 480,
+            correctAspectRatioWidth: 480,
+            correctAspectRatioHeight: 480,
             widthCrop: 0,
             heightCrop: 0,
             newWidthBlocks: 96,
@@ -18,9 +18,9 @@ describe('cropImageToBoardSize Tests', () => {
         for (let i = 0; i < 10; i++) {
             const width = Math.floor(Math.random() * 1000);
             const height = Math.floor(Math.random() * 1000);
-            const output = cropImageToBoardSize(boardSize, boardSize, width, height);
-            expect(output.newWidth % boardSize).toBe(0);
-            expect(output.newHeight % boardSize).toBe(0);
+            const output = cropToBoardSize(boardSize, boardSize, width, height);
+            expect(output.correctAspectRatioWidth % boardSize).toBe(0);
+            expect(output.correctAspectRatioHeight % boardSize).toBe(0);
         }
     });
 
@@ -29,8 +29,8 @@ describe('cropImageToBoardSize Tests', () => {
         for (let i = 0; i < 10; i++) {
             const width = Math.floor(Math.random() * 1000);
             const height = Math.floor(Math.random() * 1000);
-            const output = cropImageToBoardSize(boardSize, boardSize, width, height);
-            expect(output.newWidth === output.newHeight).toBeTruthy();
+            const output = cropToBoardSize(boardSize, boardSize, width, height);
+            expect(output.correctAspectRatioWidth === output.correctAspectRatioHeight).toBeTruthy();
         }
     });
 });

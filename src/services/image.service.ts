@@ -1,6 +1,6 @@
 import Sharp from 'sharp';
 
-const processInputImage = async (img: Buffer): Promise<Buffer> => {
+export const processInputImage = async (img: Buffer): Promise<Buffer> => {
     const outputImg = Sharp(img, {})
         .sharpen()
         // .modulate({
@@ -13,71 +13,14 @@ const processInputImage = async (img: Buffer): Promise<Buffer> => {
     return outputImg;
 };
 
-const processOutputImage = async (img: Buffer): Promise<Buffer> => {
+export const processOutputImage = async (img: Buffer): Promise<Buffer> => {
     const outputImg = Sharp(img, {}).withMetadata().jpeg().toBuffer();
 
     return outputImg;
 };
 
-const cropImage = (
-    widthBlocks: number,
-    heightBlocks: number,
-    originalWidth: number,
-    originalHeight: number,
-): {
-    newWidth: number;
-    newHeight: number;
-    widthCrop: number;
-    heightCrop: number;
-    newWidthBlocks: number;
-    newHeightBlocks: number;
-    widthSampleSize: number;
-    heightSampleSize: number;
-} => {
-    console.groupCollapsed(['Crop Image']);
-
-    console.log(`originalWidth: ${originalWidth} originalHeight: ${originalHeight}`);
-
-    // Crop to correct board aspect ratio
-    const {
-        correctAspectRatioWidth,
-        correctAspectRatioHeight,
-        widthRemainingPixels,
-        heightRemainingPixels,
-        newWidthBlocks,
-        newHeightBlocks,
-    } = cropToBoardSize(widthBlocks, heightBlocks, originalWidth, originalHeight);
-
-    // Crop for equal number of pixels per brick
-    // or use less pixels on last bricks
-    const widthSampleSize = correctAspectRatioWidth / newWidthBlocks;
-    const heightSampleSize = correctAspectRatioHeight / newHeightBlocks;
-
-    // Total crop
-    const newWidth = correctAspectRatioWidth;
-    const newHeight = correctAspectRatioHeight;
-    const widthCrop = widthRemainingPixels;
-    const heightCrop = heightRemainingPixels;
-    const output = {
-        newWidth,
-        newHeight,
-        widthCrop,
-        heightCrop,
-        newWidthBlocks,
-        newHeightBlocks,
-        widthSampleSize,
-        heightSampleSize,
-    };
-    console.log('Crop Output: ');
-    console.dir(output);
-
-    console.groupEnd();
-
-    return output;
-};
-
 // Get values to crop image to aspect ratio of board size
-const cropToBoardSize = (
+export const cropToBoardSize = (
     widthBlocks: number,
     heightBlocks: number,
     originalWidth: number,
@@ -85,11 +28,12 @@ const cropToBoardSize = (
 ): {
     correctAspectRatioWidth: number;
     correctAspectRatioHeight: number;
-    widthRemainingPixels: number;
-    heightRemainingPixels: number;
+    widthCrop: number;
+    heightCrop: number;
     newWidthBlocks: number;
     newHeightBlocks: number;
 } => {
+    console.groupCollapsed(['Crop Image']);
     const boardSizeWidthToHeightRatio = widthBlocks / heightBlocks;
     const imgWidthToHeightRatio = originalWidth / originalHeight;
     const imgHeightToWidthRatio = originalHeight / originalWidth;
@@ -142,11 +86,13 @@ const cropToBoardSize = (
         `widthRemainingPixels: ${widthRemainingPixels} heightRemainingPixels: ${heightRemainingPixels}`,
     );
 
+    console.groupEnd();
+
     return {
         correctAspectRatioWidth,
         correctAspectRatioHeight,
-        widthRemainingPixels,
-        heightRemainingPixels,
+        widthCrop: widthRemainingPixels,
+        heightCrop: heightRemainingPixels,
         newWidthBlocks,
         newHeightBlocks,
     };
@@ -161,5 +107,3 @@ export const getPixelForCoords = (
     const index = (column + row * imageWidth) * 4;
     return { r: pixelArr[index], g: pixelArr[index], b: pixelArr[index] };
 };
-
-export { cropImage as cropImageToBoardSize, processInputImage, processOutputImage };
