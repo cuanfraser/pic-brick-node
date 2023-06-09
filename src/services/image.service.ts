@@ -105,5 +105,5 @@ export const getPixelForCoords = (
     pixelArr: Uint8ClampedArray,
 ): { r: number; g: number; b: number } => {
     const index = (column + row * imageWidth) * 4;
-    return { r: pixelArr[index], g: pixelArr[index], b: pixelArr[index] };
+    return { r: pixelArr[index], g: pixelArr[index + 1], b: pixelArr[index + 2] };
 };

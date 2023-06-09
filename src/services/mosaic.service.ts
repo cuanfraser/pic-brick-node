@@ -222,23 +222,15 @@ const getColourMatchForSample = (
             );
 
             let fractionOfPixel = 1;
-            let colStart = false;
-            let colEnd = false;
-            let rowStart = false;
-            let rowEnd = false;
             if (col == Math.floor(pixelsOriginCol)) {
-                colStart = true;
                 fractionOfPixel = fractionOfPixel * (1 - (pixelsOriginCol % 1));
             } else if (col + 1 > pixelsEndCol) {
-                colEnd = true;
                 fractionOfPixel = fractionOfPixel * (pixelsEndCol % 1);
             }
 
             if (row == Math.floor(pixelsOriginRow)) {
-                rowStart = true;
                 fractionOfPixel = fractionOfPixel * (1 - (pixelsOriginRow % 1));
             } else if (row + 1 > pixelsEndRow) {
-                rowEnd = true;
                 fractionOfPixel = fractionOfPixel * (pixelsEndRow % 1);
             }
 
@@ -246,6 +238,7 @@ const getColourMatchForSample = (
             if (isNaN(pixelRgb.r)) {
                 console.log("BROKEN");
             }
+
             rVals.push({ value: pixelRgb.r, weight: weight });
             gVals.push({ value: pixelRgb.g, weight: weight });
             bVals.push({ value: pixelRgb.b, weight: weight });
