@@ -27,7 +27,7 @@ export const loadBrickImages = async (): Promise<void> => {
 const rgbPalette: { R: number; G: number; B: number }[] = HEX_COLOUR_PALETTE.map((hex) => {
     const rgb = convert.hex.rgb(hex);
     return { R: rgb[0], G: rgb[1], B: rgb[2] };
-});;
+});
 
 // Finds closest hex colour in colour palette when given RGB val
 export const closestColourInPalette = (
@@ -93,9 +93,6 @@ export const makeMosaic = async (
     const brickImageCtx = brickImageCan.getContext('2d');
 
     const hexToCount = new Map<string, number>();
-
-    // Crop for equal number of pixels per brick
-    // or use less pixels on last bricks
     const widthSampleSize = newWidth / widthBlocks;
     const heightSampleSize = newHeight / heightBlocks;
     if (widthSampleSize < 1 || heightSampleSize < 1) {
@@ -203,6 +200,7 @@ export const getMosaicForLatestSubmission = async (): Promise<string> => {
     return getMosaicForSubmission(latestSubmission.submissionId);
 };
 
+// Get hex from palette that is closest to the average colour in the given sample area
 const getColourMatchForSample = (
     brickRow: number,
     brickCol: number,
