@@ -6,10 +6,11 @@ import {
     MIN_HEX_COUNT,
 } from '../constants.js';
 import { cropToBoardSize, getPixelForCoords } from './image.service.js';
-import nearestColour from 'nearest-color';
 import { JotformSubmissionModel } from '../models/jotform-submission/jotform-submission.model.js';
 import { IMosaic } from '../models/mosaic/mosaic.schema.js';
 import { writeFile } from 'node:fs/promises';
+import { closest } from 'color-diff';
+import convert from 'color-convert';
 
 export const brickImgs: { [key: string]: Canvas.Image } = {};
 //Load images of individual bricks
@@ -30,8 +31,12 @@ export const closestColourInPalette = (
     b: number,
     palette: string[],
 ): string => {
-    const matcher = nearestColour.from(palette);
-    return matcher(`rgb(${r}, ${g}, ${b})`);
+    const rgbPalette = palette.map(hex => {
+        const rgb = convert.hex.rgb(hex);
+        return {R: rgb[0], G: rgb[1], B: rgb[2]};
+    })
+    const result = closest({R: r, G: g, B: b}, rgbPalette);
+    return '#' + convert.rgb.hex(result.R, result.G, result.B);
 };
 
 export interface MosaicInfo {
@@ -118,7 +123,7 @@ export const makeMosaic = async (
     // New Palette excluding Hex colours with less than chosen amount
     const newPalette = HEX_COLOUR_PALETTE.filter((hex) => {
         let count = hexToCount.get(hex);
-        if (count === undefined) {
+        if (count == undefined) {
             count = 0;
         }
         return count > MIN_HEX_COUNT;
@@ -248,7 +253,6 @@ const getColourMatchForSample = (
         }
     }
 
-    const totalWeightsR = rVals.reduce((acc, cur) => acc + cur.weight, 0);
     //   Average RGB vals
     const rAvg = Math.floor(rVals.reduce((acc, cur) => acc + cur.value * cur.weight, 0));
     const gAvg = Math.floor(gVals.reduce((acc, cur) => acc + cur.value * cur.weight, 0));
