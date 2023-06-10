@@ -24,24 +24,24 @@ export const loadBrickImages = async (): Promise<void> => {
     }
 };
 
+const rgbPalette: { R: number; G: number; B: number }[] = HEX_COLOUR_PALETTE.map((hex) => {
+    const rgb = convert.hex.rgb(hex);
+    return { R: rgb[0], G: rgb[1], B: rgb[2] };
+});;
+
 // Finds closest hex colour in colour palette when given RGB val
 export const closestColourInPalette = (
     r: number,
     g: number,
     b: number,
-    palette: string[],
+    rgbPalette: { R: number; G: number; B: number }[],
 ): string => {
-    const rgbPalette = palette.map(hex => {
-        const rgb = convert.hex.rgb(hex);
-        return {R: rgb[0], G: rgb[1], B: rgb[2]};
-    })
-    const result = closest({R: r, G: g, B: b}, rgbPalette);
+    const result = closest({ R: r, G: g, B: b }, rgbPalette);
     return '#' + convert.rgb.hex(result.R, result.G, result.B);
 };
 
 export interface MosaicInfo {
     image: Buffer;
-    hexToCountBefore: Map<string, number>;
     hexToCountAfter: Map<string, number>;
     instructions: string[][];
     sampleSize: number;
@@ -113,7 +113,7 @@ export const makeMosaic = async (
                 newWidth,
                 newHeight,
                 pixelArr,
-                HEX_COLOUR_PALETTE,
+                rgbPalette,
             );
             const count = hexToCount.get(match);
             hexToCount.set(match, count ? count + 1 : 1);
@@ -121,12 +121,15 @@ export const makeMosaic = async (
     }
 
     // New Palette excluding Hex colours with less than chosen amount
-    const newPalette = HEX_COLOUR_PALETTE.filter((hex) => {
+    const newRgbPalette = HEX_COLOUR_PALETTE.filter((hex) => {
         let count = hexToCount.get(hex);
         if (count == undefined) {
             count = 0;
         }
         return count > MIN_HEX_COUNT;
+    }).map((hex) => {
+        const rgb = convert.hex.rgb(hex);
+        return { R: rgb[0], G: rgb[1], B: rgb[2] };
     });
 
     const hexToCountAfter = new Map<string, number>();
@@ -145,13 +148,17 @@ export const makeMosaic = async (
                 newWidth,
                 newHeight,
                 pixelArr,
-                newPalette,
+                newRgbPalette,
             );
             const count = hexToCount.get(match);
             hexToCount.set(match, count ? count + 1 : 1);
             instructionsRow[brickCol] = match;
 
-            brickImageCtx.drawImage(brickImgs[match], brickCol * BRICK_IMG_WIDTH_PIXELS, brickRow * BRICK_IMG_HEIGHT_PIXELS);
+            brickImageCtx.drawImage(
+                brickImgs[match],
+                brickCol * BRICK_IMG_WIDTH_PIXELS,
+                brickRow * BRICK_IMG_HEIGHT_PIXELS,
+            );
         }
         instructions[brickRow] = instructionsRow;
     }
@@ -160,7 +167,6 @@ export const makeMosaic = async (
 
     const output = {
         image: imageOutput,
-        hexToCountBefore: hexToCount,
         hexToCountAfter: hexToCountAfter,
         instructions: instructions,
         sampleSize: widthSampleSize,
@@ -205,7 +211,7 @@ const getColourMatchForSample = (
     imageWidth: number,
     imageHeight: number,
     pixelArr: Uint8ClampedArray,
-    hexColourPalette: string[],
+    rgbPalette: { R: number; G: number; B: number }[],
 ): string => {
     const pixelsOriginCol = brickCol * widthSampleSize;
     const pixelsEndCol = pixelsOriginCol + widthSampleSize;
@@ -243,10 +249,6 @@ const getColourMatchForSample = (
             }
 
             const weight = fractionOfPixel / (widthSampleSize * heightSampleSize);
-            if (isNaN(pixelRgb.r)) {
-                console.log("BROKEN");
-            }
-
             rVals.push({ value: pixelRgb.r, weight: weight });
             gVals.push({ value: pixelRgb.g, weight: weight });
             bVals.push({ value: pixelRgb.b, weight: weight });
@@ -259,6 +261,6 @@ const getColourMatchForSample = (
     const bAvg = Math.floor(bVals.reduce((acc, cur) => acc + cur.value * cur.weight, 0));
 
     // Find closest RGB colour in palette
-    const match = closestColourInPalette(rAvg, gAvg, bAvg, hexColourPalette);
+    const match = closestColourInPalette(rAvg, gAvg, bAvg, rgbPalette);
     return match;
 };
