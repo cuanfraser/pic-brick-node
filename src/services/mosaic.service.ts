@@ -147,8 +147,8 @@ export const makeMosaic = async (
                 pixelArr,
                 newRgbPalette,
             );
-            const count = hexToCount.get(match);
-            hexToCount.set(match, count ? count + 1 : 1);
+            const count = hexToCountAfter.get(match);
+            hexToCountAfter.set(match, count ? count + 1 : 1);
             instructionsRow[brickCol] = match;
 
             brickImageCtx.drawImage(
