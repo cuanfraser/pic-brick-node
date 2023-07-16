@@ -26,11 +26,29 @@ export const getInstructionsForSubmission = async (id: string): Promise<string> 
 
 const getHexCount = (mosaic: IMosaic): string => {
     let hexCountString = 'colorId,hex,count\n';
-    HEX_COLOUR_NUM_MAP.forEach((colorId, hex) => {
-        const count = mosaic.hexToCountMap.get(hex);
-        const current = `${colorId},${hex},${count ? count : 0}\n`;
-        hexCountString += current;
+    // For sorting by colorId
+    const colorIdToStringMap = new Map<number, string>();
+    const nonMatchedHexes = new Map<string, number>();
+    mosaic.hexToCountMap.forEach((count, hex) => {
+        const colorId = HEX_COLOUR_NUM_MAP.get(hex)
+        if (colorId) {
+            const current = `${hex},${count ? count : 0}`;
+            colorIdToStringMap.set(colorId, current);
+        } else {
+            nonMatchedHexes.set(hex, count ? count : 0);
+        }
     });
+
+    const sortedMap = new Map([...colorIdToStringMap.entries()].sort());
+    sortedMap.forEach((stringVal, colorId) => {
+        hexCountString += `${colorId},${stringVal}\n`;
+    })
+    if (nonMatchedHexes.size > 0) {
+        hexCountString += 'No Color ID Hexes:\n';
+        nonMatchedHexes.forEach((count, hex) => {
+            hexCountString += `Hex: ${hex}, Count: ${count}\n`;
+        })
+    }
 
     return hexCountString;
 };
