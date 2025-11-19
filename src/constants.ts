@@ -25,6 +25,7 @@ export const JOTFORM_API_KEY = process.env.JOTFORM_API_KEY;
 export const JOTFORM_SMALL_TEXT = 'Small';
 export const JOTFORM_MEDIUM_TEXT = 'Medium';
 export const JOTFORM_LARGE_TEXT = 'Large';
+export const JOTFORM_EXTRA_LARGE_TEXT = 'Extra Large';
 
 // Background Color Jotform Text
 export const JOTFORM_REPLACE_BG_YES = 'Yes';

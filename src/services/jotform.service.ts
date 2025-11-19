@@ -2,6 +2,7 @@ import fetch from 'node-fetch';
 import {
     HEX_COLOUR_BG_MAP,
     JOTFORM_API_KEY,
+    JOTFORM_EXTRA_LARGE_TEXT,
     JOTFORM_LARGE_TEXT,
     JOTFORM_MEDIUM_TEXT,
     JOTFORM_REPLACE_BG_YES,
@@ -101,6 +102,9 @@ export const makeMosaicFromJotForm = async (
         heightBlocks = 64;
     } else if (boardSize.startsWith(JOTFORM_LARGE_TEXT)) {
         widthBlocks = 96;
+        heightBlocks = 96;
+    } else if (boardSize.startsWith(JOTFORM_EXTRA_LARGE_TEXT)) {
+        widthBlocks = 160;
         heightBlocks = 96;
     }
 
