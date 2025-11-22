@@ -1,4 +1,4 @@
-import { type Date, Schema, Types } from 'mongoose';
+import { Schema, Types } from 'mongoose';
 
 export interface IJotformSubmission {
     _id: Types.ObjectId;
@@ -12,8 +12,8 @@ export interface IJotformSubmission {
     size: string;
     replaceBackground: string;
     backgroundColor: string;
-    imageNames: [string];
-    mosaics: [Types.ObjectId];
+    imageNames: string[];
+    mosaics: Types.ObjectId[];
 }
 
 export const jotformSubmissionSchema = new Schema<IJotformSubmission>(

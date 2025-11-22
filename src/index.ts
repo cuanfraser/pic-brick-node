@@ -13,7 +13,6 @@ const main = async () => {
 
     loadBrickImages();
 
-    mongoose.set('strictQuery', false);
     let dbConnectionString = 'mongodb://localhost:27017/pic-brick';
     if (MONGODB_URI) {
         dbConnectionString = MONGODB_URI;
