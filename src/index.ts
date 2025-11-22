@@ -18,7 +18,14 @@ const main = async () => {
         dbConnectionString = MONGODB_URI;
     }
     console.log('DB Connection String: ' + dbConnectionString);
-    await mongoose.connect(dbConnectionString);
+    try {
+        await mongoose.connect(dbConnectionString);
+        console.log('Successfully connected to MongoDB');
+    } catch (error) {
+        console.error('Error connecting to MongoDB:', error);
+        process.exit(1);
+    }
+    
 
     app.use(function (req, res, next) {
         res.header('Access-Control-Allow-Origin', '*');
