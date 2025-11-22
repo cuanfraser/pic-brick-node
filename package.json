@@ -29,8 +29,6 @@
     "devDependencies": {
         "@eslint/eslintrc": "^3.3.1",
         "@eslint/js": "^9.39.1",
-        "@types/color-convert": "^2.0.0",
-        "@types/color-diff": "^1.2.1",
         "@types/express": "^5.0.5",
         "@types/jest": "^30.0.0",
         "@types/node": "^24.10.1",
@@ -44,7 +42,7 @@
         "jest": "^30.2.0",
         "prettier": "^3.6.2",
         "ts-jest": "^29.4.5",
-        "ts-jest-resolver": "^2.0.0",
+        "ts-jest-resolver": "^2.0.1",
         "typescript": "^5.9.3"
     }
 }

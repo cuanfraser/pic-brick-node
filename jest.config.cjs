@@ -6,7 +6,7 @@ const config = {
     silent: true,
     testEnvironment: 'node',
     preset: 'ts-jest/presets/default-esm',
-    resolver: "ts-jest-resolver",
+    resolver: 'ts-jest-resolver',
     moduleDirectories: ['node_modules', 'src'],
     modulePaths: ['node_modules', 'src'],
     roots: ['src'],
