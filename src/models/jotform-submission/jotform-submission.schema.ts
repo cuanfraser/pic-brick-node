@@ -1,4 +1,4 @@
-import { Date, Schema, Types } from 'mongoose';
+import { type Date, Schema, Types } from 'mongoose';
 
 export interface IJotformSubmission {
     _id: Types.ObjectId;
