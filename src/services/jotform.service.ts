@@ -52,7 +52,7 @@ export const getJotFormImage = async (
     const imageUrl = `${JOTFORM_UPLOAD_URL}/${JOTFORM_USERNAME}/${formId}/${subId}/${encodeURIComponent(
         fileName,
     )}?apiKey=${JOTFORM_API_KEY}`;
-    console.log('JotForm Image Retrieval URL: ' + imageUrl);
+    console.log(`JotForm image request for file "${fileName}" (formId: ${formId}, subId: ${subId})`);
     const resp = await fetch(imageUrl);
     console.timeEnd('getJotFormImage');
     if (resp.ok) {
